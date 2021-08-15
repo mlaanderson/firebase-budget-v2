@@ -4,8 +4,9 @@
         <div>
             <calculator-input ref="cinput" :decimals="2" name="blah" v-model="cvalue"/> {{value}}
         </div>
-        <p><button class="uk-button uk-button-default" @click="showCalendar">Click</button></p>
+        <p><button class="uk-button uk-button-default" @click="logout">Logout</button></p>
         <calendar-dialog ref="calDialog" v-model="period" :startDate="config.startDate" :periodLength="config.periodLength"/>
+        <login-dialog ref="loginDialog"/>
     </div>
 </template>
 
@@ -17,6 +18,7 @@ import Icons from 'uikit/dist/js/uikit-icons';
 import Firebase from './data/firebase';
 import CalculatorInput from './components/CalculatorInput.vue';
 import CalendarDialog from './components/CalendarDialog.vue';
+import LoginDialog from './components/LoginDialog.vue';
 import { DateTime, Duration } from 'luxon';
 import { CalculatePeriod } from './util/date';
 
@@ -39,6 +41,7 @@ const store = new Vuex.Store({
         config: {
             periodLength: 14,
             startDate: DateTime.fromISO('2016-06-24').startOf('day'),
+            categories: ["Income", "Charity", "Saving", "Housing", "Utilities", "Food", "Clothing", "Transportation", "Medical", "Personal", "Education", "Recreation", "Debt"]
         }
     },
     mutations: {
@@ -63,17 +66,16 @@ Vue.mixin({
 export default {
     name: 'App',
     components: {
-        CalculatorInput, CalendarDialog
+        CalculatorInput, LoginDialog, CalendarDialog
     },
     store,
     methods: {
-        increment() {
-            this.$store.commit('increment');
-            console.log(this.$store.state.count);
+        showDialog() {
+            UIkit.modal(this.$refs.loginDialog.$el).show();
         },
-        showCalendar() {
-            UIkit.modal(this.$refs.calDialog.$el).show();
-        },
+        logout() {
+            Firebase.auth.signOut();
+        }
     },
     computed: {
         cvalue: {
@@ -82,13 +84,15 @@ export default {
         },
         period: {
             get: function() { return this.$store.state.period; },
-            set: function(val) { this.$store.commit('set', {key: 'period', value: val})}
+            set: function(val) { 
+                console.log('Setting the period');
+                this.$store.commit('set', {key: 'period', value: val});
+            }
         },
         ...Vuex.mapState(['count', 'value', 'config'])
     },
     beforeCreate() {
-        console.log('Creating...');
-        console.log(this.$refs)
+
     }
 }
 </script>
