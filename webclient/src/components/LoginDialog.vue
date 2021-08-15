@@ -68,7 +68,6 @@ export default {
             this.$refs.btnLogin.disabled = (this.$refs.username.value.length == 0) || (this.$refs.password.value.length == 0);
         },
         authStateChanged(auth) {
-            console.log('Auth State Changed', auth);
             if (auth) {
                 UIkit.modal(this.$el).hide();
                 // make sure the username and password can't be grabbed from the DOM
