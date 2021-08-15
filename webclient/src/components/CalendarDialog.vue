@@ -54,12 +54,12 @@
 
 <script>
 import UIkit from 'uikit';
+import Icon from 'uikit/dist/js/uikit-icons';
 import { DateTime, Info } from 'luxon';
 import { getWeekStartByLocale } from 'weekstart';
 import { CalculatePeriod } from '../util/date';
 
-window.DateTime = DateTime;
-window.Info = Info;
+UIkit.use(Icon);
 
 var lastTouch = null;
 

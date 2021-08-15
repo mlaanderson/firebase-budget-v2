@@ -1,22 +1,29 @@
 <template>
     <div id="app">
-        <p>
-            <button class="uk-button uk-button-default" @click="logout">Logout</button>
-            <button class="uk-button uk-button-default" @click="showCalendar">Period</button>
-        </p>
-        <ol>
-            <li v-for="transaction in periodTransactions" :key="transaction._key">
-                {{ transaction.name }}
-                {{ currency(transaction.amount) }}
-                {{ transaction.paid ? "" : "NOT PAID" }}
-            </li>
-        </ol>
-        <p>{{ currency(budgetBalance) }}</p>
-        <p>{{ currency(bankBalance) }}</p>
+        <top-nav-bar/>   
+        <div class="uk-section uk-overflow-auto" uk-height-viewport="expand: true" id="viewport">
+            <div class="uk-container">
+                <ol>
+                    <li v-for="transaction in periodTransactions" :key="transaction._key">
+                        {{ transaction.name }}
+                        {{ currency(transaction.amount) }}
+                        {{ transaction.paid ? "" : "NOT PAID" }}
+                    </li>
+                </ol>
+                <p>{{ currency(budgetBalance) }}</p>
+                <p>{{ currency(bankBalance) }}</p>
+            </div>
+        </div>
+        <div class="uk-section uk-section-primary uk-height-max-small">
+            <div class="uk-container">
+                Footer, totals and graph? goes here
+            </div>
+        </div>  
+
 
         <!-- dialogs -->
-        <calendar-dialog ref="calDialog" v-model="period" :startDate="config.startDate" :periodLength="config.periodLength"/>
         <login-dialog ref="loginDialog"/>
+
     </div>
 </template>
 
@@ -26,7 +33,7 @@ import Vuex from 'vuex';
 import store from './data/store';
 import UIkit from 'uikit';
 import Firebase from './data/firebase';
-import CalendarDialog from './components/CalendarDialog.vue';
+import TopNavBar from './components/TopNavBar.vue';
 import LoginDialog from './components/LoginDialog.vue';
 import { DateTime, Duration } from 'luxon';
 import { CalculatePeriod } from './util/date';
@@ -53,7 +60,7 @@ Vue.mixin({
 export default {
     name: 'App',
     components: {
-        LoginDialog, CalendarDialog
+        LoginDialog, TopNavBar
     },
     store,
     methods: {
@@ -65,6 +72,9 @@ export default {
         },
         currency(value) {
             return Currency.format(value);
+        },
+        debug() {
+            console.log('here i am')
         }
     },
     computed: {
@@ -84,6 +94,28 @@ export default {
     },
     beforeCreate() {
         document.title = 'Anderson Budget';
+    },
+    mounted() {
+        // add a mutation observer to viewport to adjust the max-height 
+        // style whenever the min-height changes. UIkit handles the
+        // min-height adjustment already
+        function adjustViewport() {
+            console.log('adjustViewport')
+            let el = document.getElementById('viewport');
+            if (el.style.minHeight !== el.style.maxHeight) {
+                el.style.maxHeight = el.style.minHeight;
+                el.style.overflowY = 'scroll';
+            }
+        }
+
+        const viewportObserver = new MutationObserver(adjustViewport);
+        viewportObserver.observe(document.getElementById('viewport'), {
+            attributes: true,
+            attributeFilter: ['style']
+        });
+
+        // manually adjust the viewport height on-load
+        adjustViewport();
     }
 }
 </script>
