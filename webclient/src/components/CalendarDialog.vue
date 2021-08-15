@@ -38,6 +38,7 @@
                                 :key="day" 
                                 :class="cellClass(day + week * 7)" 
                                 @mouseover="onMouseOver"
+                                @click.prevent="onClick"
                                 :date="cellDate(day + week * 7).toFormat('yyyy-MM-dd')">{{ cellDate(day + week * 7).toLocaleString({ day: 'numeric' }) }}</td>
                         </tr>
                     </tbody>
@@ -52,6 +53,7 @@
 </template>
 
 <script>
+import UIkit from 'uikit';
 import { DateTime, Info } from 'luxon';
 import { getWeekStartByLocale } from 'weekstart';
 import { CalculatePeriod } from '../util/date';
@@ -156,7 +158,8 @@ export default {
          * Picks the period the user wants and [will] close the dialog
          */
         selectPeriod() {
-            this.$emit('select', this.selected);
+            this.$emit('input', this.selected);
+            UIkit.modal(this.$el).hide();
         },
 
         /**
@@ -195,12 +198,11 @@ export default {
         onTouchEnd(evt) {
             if (lastTouch === null) {
                 // this is a tap not a drag
-                console.log('tap detected');
-                let activeDate = DateTime.fromISO(`${evt.target.getAttribute('date')}T00:00:00`);
+                let activeDate = DateTime.fromISO(evt.target.getAttribute('date')).startOf('day');
                 let period = CalculatePeriod(activeDate, this.startDate, this.periodLength);
                 let cells = Array.from(this.$refs.calBody.getElementsByTagName('td'));
                 cells.forEach(cell => {
-                    let cdate = DateTime.fromISO(`${cell.getAttribute('date')}T00:00:00`);
+                    let cdate = DateTime.fromISO(cell.getAttribute('date')).startOf('day');
                     if ((period.start.startOf('day') <= cdate.startOf('day')) && (cdate.startOf('day') <= period.end.startOf('day'))) {
                         cell.className = 'uk-background-primary uk-light';
                     } else if (cdate.month === this.display.month) {
@@ -209,8 +211,20 @@ export default {
                         cell.className = 'uk-background-muted';
                     }
                 });
+                this.selected = period;
             }
             lastTouch = null;
+        },
+
+        /**
+         * Handles the on-click for dates in non-touch environments
+         */
+        onClick(evt) {
+            if (!this.touchCapable) {
+                let activeDate = DateTime.fromISO(evt.target.getAttribute('date')).startOf('day');
+                this.selected = CalculatePeriod(activeDate, this.startDate, this.periodLength);
+                this.selectPeriod();
+            }
         },
 
         /**
