@@ -6,13 +6,18 @@
   export default {
     created() {
       const component = this;
-      this.handler = function (e) {
+      this.upHandler = function (e) {
         component.$emit('keyup', e);
       }
-      window.addEventListener('keyup', this.handler);
+      this.downHandler = function (e) {
+        component.$emit('keydown', e);
+      }
+      window.addEventListener('keyup', this.upHandler);
+      window.addEventListener('keydown', this.downHandler);
     },
     beforeDestroy() {
-      window.removeEventListener('keyup', this.handler);
+      window.removeEventListener('keyup', this.upHandler);
+      window.removeEventListener('keydown', this.downHandler);
     }
   }
 </script>
