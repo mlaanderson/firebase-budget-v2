@@ -67,7 +67,21 @@ const store = new Vuex.Store({
                     .reduce((a,b) => a + b, 0);
             }
             return 0;
-        }
+        },
+        dailyBalances: state => {
+            let result = {};
+            for (let tr of state.transactions) {
+                if (tr.date in result === false) {
+                    result[tr.date] = tr.amount;
+                } else {
+                    result[tr.date] += tr.amount;
+                }
+            }
+            result = Object.entries(result).map(el => { return { date: el[0], amount: el[1] }});
+            result.sort((a,b) => a.date.localeCompare(b.date));
+
+            return result;
+        },
     }
 });
 
