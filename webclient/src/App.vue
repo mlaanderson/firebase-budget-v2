@@ -1,29 +1,11 @@
 <template>
     <div id="app">
         <top-nav-bar/>   
-        <div class="uk-section uk-overflow-auto" uk-height-viewport="expand: true" id="viewport">
-            <div class="uk-container">
-                <ol>
-                    <li v-for="transaction in periodTransactions" :key="transaction._key">
-                        {{ transaction.name }}
-                        {{ currency(transaction.amount) }}
-                        {{ transaction.paid ? "" : "NOT PAID" }}
-                    </li>
-                </ol>
-                <p>{{ currency(budgetBalance) }}</p>
-                <p>{{ currency(bankBalance) }}</p>
-            </div>
-        </div>
-        <div class="uk-section uk-section-primary uk-height-max-small">
-            <div class="uk-container">
-                Footer, totals and graph? goes here
-            </div>
-        </div>  
-
+        <transaction-list/>
+        <app-footer/>
 
         <!-- dialogs -->
         <login-dialog ref="loginDialog"/>
-
     </div>
 </template>
 
@@ -32,19 +14,12 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import store from './data/store';
 import UIkit from 'uikit';
-import Firebase from './data/firebase';
 import TopNavBar from './components/TopNavBar.vue';
 import LoginDialog from './components/LoginDialog.vue';
-import { DateTime, Duration } from 'luxon';
-import { CalculatePeriod } from './util/date';
-import { Currency } from './util/formats';
+import AppFooter from './components/AppFooter.vue';
+import TransactionList from './components/TransactionList.vue';
 
 Vue.use(Vuex);
-
-window.firebase = Firebase;
-window.DateTime = DateTime;
-window.Duration = Duration;
-window.CalculatePeriod = CalculatePeriod;
 
 // This mixin makes uikit available in all components
 Vue.mixin({
@@ -60,38 +35,9 @@ Vue.mixin({
 export default {
     name: 'App',
     components: {
-        LoginDialog, TopNavBar
+        LoginDialog, TopNavBar, AppFooter, TransactionList
     },
     store,
-    methods: {
-        showCalendar() {
-            UIkit.modal(this.$refs.calDialog.$el).show();
-        },
-        logout() {
-            Firebase.auth.signOut();
-        },
-        currency(value) {
-            return Currency.format(value);
-        },
-        debug() {
-            console.log('here i am')
-        }
-    },
-    computed: {
-        cvalue: {
-            get: function() { return this.$store.state.value; },
-            set: function(val) { this.$store.commit('setValue', val); }
-        },
-        period: {
-            get: function() { return this.$store.state.period; },
-            set: function(val) { 
-                console.log('Setting the period');
-                this.$store.commit('set', {key: 'period', value: val});
-            }
-        },
-        ...Vuex.mapGetters(['periodTransactions', 'budgetBalance', 'bankBalance']),
-        ...Vuex.mapState(['value', 'config'])
-    },
     beforeCreate() {
         document.title = 'Anderson Budget';
     },
@@ -100,7 +46,6 @@ export default {
         // style whenever the min-height changes. UIkit handles the
         // min-height adjustment already
         function adjustViewport() {
-            console.log('adjustViewport')
             let el = document.getElementById('viewport');
             if (el.style.minHeight !== el.style.maxHeight) {
                 el.style.maxHeight = el.style.minHeight;

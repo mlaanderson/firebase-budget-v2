@@ -139,14 +139,13 @@ function onTransaction(snap) {
 Firebase.auth.onAuthStateChanged((auth) => {
     if (auth) {
         // get ready to populate the state
-        console.log('adding listeners to the store for user', Firebase.uid);
         Firebase.db.ref(`${Firebase.uid}/config`).on('value', onConfig);
         Firebase.db.ref(`${Firebase.uid}/accounts/budget/transactions`).on('value', onTransaction);
         // Firebase.db.ref(`${Firebase.uid}/accounts/budget/recurring`).on('value', onRecurring);
     } else {
         // empty the state
-        console.log('removing listeners from the store');
-
+        store.commit('setConfig', { key: 'categories', value: ['Income'] });
+        store.commit('set', { key: 'transactions', value: [] });
     }
 });
 

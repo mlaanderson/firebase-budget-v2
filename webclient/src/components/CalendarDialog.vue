@@ -3,27 +3,27 @@
         <div class="uk-modal-dialog">
             <div class="uk-modal-header">
                 <h2 class="uk-modal-title">{{ display.toLocaleString({ month: 'long', year: 'numeric' }) }}</h2>
-                    <div class="uk-navbar-container uk-navbar-transparent" uk-navbar>
-                        <div class="uk-navbar-left">
-                            <ul class="uk-iconnav">
-                                <li><a @click.prevent="changeMonths(-12)" href="#" uk-icon="icon: chevron-double-left" uk-tooltip="Previous Year"></a></li>
-                                <li><a @click.prevent="changeMonths(-1)" href="#" uk-icon="icon: triangle-left" uk-tooltip="Previous Month"></a></li>
-                            </ul>
-                        </div>
-
-                        <div class="uk-navbar-center">
-                            <ul class="uk-iconnav">
-                                <li><a @click.prevent="changeMonths(0)" href="#" uk-icon="icon: calendar" uk-tooltip="Current Month"></a></li>
-                            </ul>
-                        </div>
-
-                        <div class="uk-navbar-right">
-                            <ul class="uk-iconnav">
-                                <li><a @click.prevent="changeMonths(1)" href="#" uk-icon="icon: triangle-right" uk-tooltip="Next Month"></a></li>
-                                <li><a @click.prevent="changeMonths(12)" href="#" uk-icon="icon: chevron-double-right" uk-tooltip="Next Year"></a></li>
-                            </ul>
-                        </div>
+                <div class="uk-navbar-container uk-navbar-transparent" uk-navbar>
+                    <div class="uk-navbar-left">
+                        <ul class="uk-iconnav">
+                            <li><a @click.prevent="changeMonths(-12)" href="#" uk-icon="icon: chevron-double-left" uk-tooltip="Previous Year"></a></li>
+                            <li><a @click.prevent="changeMonths(-1)" href="#" uk-icon="icon: triangle-left" uk-tooltip="Previous Month"></a></li>
+                        </ul>
                     </div>
+
+                    <div class="uk-navbar-center">
+                        <ul class="uk-iconnav">
+                            <li><a @click.prevent="changeMonths(0)" href="#" uk-icon="icon: calendar" uk-tooltip="Current Month"></a></li>
+                        </ul>
+                    </div>
+
+                    <div class="uk-navbar-right">
+                        <ul class="uk-iconnav">
+                            <li><a @click.prevent="changeMonths(1)" href="#" uk-icon="icon: triangle-right" uk-tooltip="Next Month"></a></li>
+                            <li><a @click.prevent="changeMonths(12)" href="#" uk-icon="icon: chevron-double-right" uk-tooltip="Next Year"></a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="uk-modal-body">
                 <table class="uk-table uk-table-divider uk-table-small" @wheel.exact.prevent="onScroll" @touchmove.prevent="onTouch" @touchend="onTouchEnd">
