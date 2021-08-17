@@ -1,5 +1,5 @@
 <template>
-    <div class="uk-container uk-width-1-3@m uk-visible@m">
+    <div class="uk-container uk-width-1-3@m uk-visible@m" uk-height-viewport="expand: true" id="info-div">
         <h4 v-if="transaction">{{ transaction.name }}</h4>
         <div v-if="transaction">Total: {{ currency(total) }}</div>
         <div v-if="transaction">Paid: {{ currency(paid) }}</div>
@@ -26,7 +26,7 @@ export default {
     props: ['transaction'],
     computed: {
         transactions() {
-            if (this.transaction) {
+            if (this.transaction) { 
                 return this.$store.findTransactions({
                     category: this.transaction.category,
                     name: this.transaction.name
@@ -38,7 +38,7 @@ export default {
             return this.transactions.map(tr => tr.amount).reduce((a,b) => a + b, 0);
         },
         paid() {
-            return this.transactions.filter(tr => tr.paid).map(tr => tr.amount).reduce((a,b) => a + b);
+            return this.transactions.filter(tr => tr.paid).map(tr => tr.amount).reduce((a,b) => a + b, 0);
         },
         period: {
             get: function() { return this.$store.state.period; },

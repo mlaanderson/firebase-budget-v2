@@ -1,6 +1,6 @@
 <template>
-    <div class="uk-section uk-overflow-auto" uk-height-viewport="expand: true" id="viewport" uk-grid>
-        <div class="uk-container uk-width-2-3@m">
+    <div class="uk-section uk-overflow-auto" uk-grid>
+        <div class="uk-container uk-width-2-3@m" uk-height-viewport="expand: true" id="viewport">
             <div>
                 <transaction-detail v-for="transaction in periodTransactions" :key="transaction.key" :transaction="transaction" @info="info"/>
                 <!-- <div v-for="transaction in periodTransactions" :key="transaction._key">
