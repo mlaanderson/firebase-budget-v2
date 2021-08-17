@@ -9,8 +9,8 @@
             </thead>
             <tbody>
                 <tr v-for="tr in transactions" :key="tr._key" @click="gotoTransaction(tr.date)">
-                    <td>{{ tr.date }}</td>
-                    <td>{{ currency(tr.amount )}}</td>
+                    <td>{{ date(tr.date) }}</td>
+                    <td>{{ currency(tr.amount)}}</td>
                 </tr>
             </tbody>
         </table>
@@ -49,6 +49,10 @@ export default {
     },
     methods: {
         currency(val) { return Currency.format(val); },
+        date(val) { 
+            return DateTime.fromISO(val).startOf('day')
+                .toLocaleString({ month: 'short', day: 'numeric', year: 'numeric' }); 
+        },
         gotoTransaction(date) { 
             date = DateTime.fromISO(date).startOf('day')
             let period = CalculatePeriod(date, 
@@ -56,7 +60,7 @@ export default {
                 this.$store.state.config.periodLength);
             console.log(date.toString(), period);
             this.period = period;
-        }
+        },
     }
 }
 </script>
