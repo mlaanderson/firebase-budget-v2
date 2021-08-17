@@ -1,28 +1,31 @@
 <template>
-<div class="uk-card uk-card-body uk-card-default uk-width-1-1">
-    <div v-show="transaction.paid || transaction.scheduled || transaction.recurring || transaction.note" class="uk-card-badge uk-label">
-        <span v-show="transaction.paid" uk-icon="icon: check" uk-tooltip="Paid"></span>
-        <span v-show="!transaction.paid && transaction.scheduled" uk-icon="icon: calendar" uk-tooltip="Scheduled"></span>
-        <span v-show="transaction.recurring" uk-icon="icon: future" uk-tooltip="Recurring Transaction"></span>
-        <span v-show="transaction.note" uk-icon="icon: comment" :uk-tooltip="transaction.note"></span>
+    <div class="uk-card uk-card-body uk-card-default uk-width-1-1">
+        <div v-show="transaction.paid || transaction.scheduled || transaction.recurring || transaction.note" class="uk-card-badge uk-label">
+            <span v-show="transaction.paid" uk-icon="icon: check" uk-tooltip="Paid"></span>
+            <span v-show="!transaction.paid && transaction.scheduled" uk-icon="icon: calendar" uk-tooltip="Scheduled"></span>
+            <span v-show="transaction.recurring" uk-icon="icon: future" uk-tooltip="Recurring Transaction"></span>
+            <span v-show="transaction.note" uk-icon="icon: comment" :uk-tooltip="transaction.note"></span>
+        </div>
+        <ul class="uk-iconnav">
+            <li>
+                <a href="#" v-on:click.prevent="editTransaction" uk-icon="icon: file-edit" uk-tooltip="Edit"></a>
+            </li>
+            <li v-show="transaction.recurring">
+                <a href="#" @click.prevent="editRecurring" uk-icon="icon: future" uk-tooltip="Edit Recurring"></a>
+            </li>
+            <li>
+                <a href="#" v-on:click.prevent="deleteTransaction" uk-icon="icon: trash" uk-tooltip="Delete"></a>
+            </li>
+            <li class="uk-visible@m">
+                <a href="#" v-on:click.prevent="showInfo" uk-icon="icon: info" uk-tooltip="Details"></a>
+            </li>
+        </ul>
+        <h3 class="uk-card-title">{{transaction.category}}: {{transaction.name}}</h3>
+        <div class="uk-child-1-1 uk-grid">
+            <div class="uk-width-expand" uk-leader>{{ date(transaction.date) }}</div>
+            <div>{{ currency(transaction.amount) }}</div>
+        </div>
     </div>
-    <ul class="uk-iconnav">
-    <li>
-        <a href="#" v-on:click.prevent="editTransaction" uk-icon="icon: file-edit" uk-tooltip="Edit"></a>
-    </li>
-    <li v-show="transaction.recurring">
-        <a href="#" @click.prevent="editRecurring" uk-icon="icon: future" uk-tooltip="Edit Recurring"></a>
-    </li>
-    <li>
-        <a href="#" v-on:click.prevent="deleteTransaction" uk-icon="icon: trash" uk-tooltip="Delete"></a>
-    </li>
-    </ul>
-    <h3 class="uk-card-title">{{transaction.category}}: {{transaction.name}}</h3>
-    <div class="uk-child-1-1 uk-grid">
-        <div class="uk-width-expand" uk-leader>{{ date(transaction.date) }}</div>
-        <div>{{ currency(transaction.amount) }}</div>
-    </div>
-</div>
 </template>
 
 <script>
@@ -53,7 +56,10 @@ export default {
         date(value) { return ShortDate.format(value); },
         editTransaction() {},
         editRecurring() {},
-        deleteTransaction() {}
+        deleteTransaction() {},
+        showInfo() {
+            this.$emit('info', this.transaction);
+        },
     },
     computed: {
         ...Vuex.mapState(['config'])

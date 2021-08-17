@@ -100,7 +100,6 @@ export default {
         period: {
             get: function() { return this.$store.state.period; },
             set: function(val) { 
-                console.log('Setting the period');
                 this.$store.commit('set', { key: 'period', value: val });
             }
         },
