@@ -4,17 +4,22 @@
             <div class="uk-text-right">Balance: {{ currency(budgetBalance) }}</div>
             <div class="uk-text-right">Bank: {{ currency(bankBalance) }}</div>
         </div>
+        <chart-component/>
     </div>  
 </template>
 
 <script>
 import Vue from 'vue';
 import Vuex from 'vuex';
+import ChartComponent from './ChartComponent.vue';
 import { Currency } from '../util/formats';
 
 Vue.use(Vuex);
 
 export default {
+    components: {
+        ChartComponent
+    },
     computed: {
         ...Vuex.mapGetters(['dailyBalances', 'budgetBalance', 'bankBalance']),
     },

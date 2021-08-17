@@ -2,13 +2,8 @@
     <div class="uk-section uk-overflow-auto" uk-grid>
         <div class="uk-container uk-width-2-3@m" uk-height-viewport="expand: true" id="viewport">
             <div>
-                <transaction-detail v-for="transaction in periodTransactions" :key="transaction.key" :transaction="transaction" @info="info"/>
-                <!-- <div v-for="transaction in periodTransactions" :key="transaction._key">
-                    {{ transaction.date }}
-                    {{ transaction.name }}
-                    {{ currency(transaction.amount) }}
-                    {{ transaction.paid ? "" : "NOT PAID" }}
-                </div> -->
+                <transaction-detail v-for="transaction in periodTransactions" 
+                    :key="transaction.key" :transaction="transaction" @info="info"/>
             </div>
         </div>
         <transaction-info :transaction="selected"/>

@@ -47,7 +47,12 @@ export default {
         // min-height adjustment already
         function adjustViewport() {
             let el = document.getElementById('viewport');
-            if (el.style.minHeight !== el.style.maxHeight) {
+            if (el && (el.style.minHeight !== el.style.maxHeight)) {
+                el.style.maxHeight = el.style.minHeight;
+                el.style.overflowY = 'scroll';
+            }
+            el = document.getElementById('info-div');
+            if (el && (el.style.minHeight !== el.style.maxHeight)) {
                 el.style.maxHeight = el.style.minHeight;
                 el.style.overflowY = 'scroll';
             }
