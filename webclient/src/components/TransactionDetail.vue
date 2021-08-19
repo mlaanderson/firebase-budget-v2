@@ -5,6 +5,7 @@
             <span v-show="!transaction.paid && transaction.scheduled" uk-icon="icon: calendar" uk-tooltip="Scheduled"></span>
             <span v-show="transaction.recurring" uk-icon="icon: future" uk-tooltip="Recurring Transaction"></span>
             <span v-show="transaction.note" uk-icon="icon: comment" :uk-tooltip="transaction.note"></span>
+            <span v-show="transaction.check" uk-icon="icon: credit-card" :uk-tooltip="`Check ${transaction.check}`"></span>
         </div>
         <ul class="uk-iconnav">
             <li>
@@ -31,6 +32,8 @@
 <script>
 import Vue from 'vue';
 import Vuex from 'vuex';
+import UIkit from 'uikit';
+import Firebase from '../data/firebase';
 import { Currency, ShortDate } from '../util/formats';
 
 Vue.use(Vuex);
@@ -54,9 +57,21 @@ export default {
     methods: {
         currency(value) { return Currency.format(value); },
         date(value) { return ShortDate.format(value); },
-        editTransaction() {},
+        editTransaction() { 
+            this.$root.$children[0].$refs.transactionEditor.transaction = JSON.parse(JSON.stringify(this.transaction));
+            window.editor = this.$root.$children[0].$refs.transactionEditor;
+            UIkit.modal(this.$root.$children[0].$refs.transactionEditor.$el).show();
+        },
         editRecurring() {},
-        deleteTransaction() {},
+        deleteTransaction() {
+            let transaction = this.transaction;
+            UIkit.modal.confirm(`Delete ${this.transaction.name} in ${this.transaction.category}?`).then(
+                function() {
+                    Firebase.transactions.child(transaction._key).remove();
+                },
+                function() {}
+            )
+        },
         showInfo() {
             this.$emit('info', this.transaction);
         },

@@ -6,6 +6,7 @@
 
         <!-- dialogs -->
         <login-dialog ref="loginDialog"/>
+        <transaction-editor ref="transactionEditor"/>
     </div>
 </template>
 
@@ -16,6 +17,7 @@ import store from './data/store';
 import UIkit from 'uikit';
 import TopNavBar from './components/TopNavBar.vue';
 import LoginDialog from './components/LoginDialog.vue';
+import TransactionEditor from './components/TransactionEditor.vue';
 import AppFooter from './components/AppFooter.vue';
 import TransactionList from './components/TransactionList.vue';
 
@@ -35,7 +37,7 @@ Vue.mixin({
 export default {
     name: 'App',
     components: {
-        LoginDialog, TopNavBar, AppFooter, TransactionList
+        LoginDialog, TopNavBar, AppFooter, TransactionList, TransactionEditor
     },
     store,
     beforeCreate() {

@@ -130,7 +130,7 @@ export default {
             UIkit.modal(this.$refs.calDialog.$el).show();
         },
         addTransaction() {
-
+            this.$root.$children[0].$refs.transactionEditor.newTransaction();
         },
         addRecurring() {
 
