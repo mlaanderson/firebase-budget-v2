@@ -6,7 +6,7 @@
                     :key="transaction.key" :transaction="transaction" @info="info"/>
             </div>
         </div>
-        <transaction-info :transaction="selected"/>
+        <transaction-info ref="infoDiv" :transaction="selected"/>
     </div>
 </template>
 
@@ -35,6 +35,7 @@ export default {
         currency(value) { return Currency.format(value); },
         info(transaction) {
             this.selected = transaction;
+            this.$refs.infoDiv.$el.scrollTo(0,0);
         },
         onTouch(evt) {
             if (lastTouch !== null) {
