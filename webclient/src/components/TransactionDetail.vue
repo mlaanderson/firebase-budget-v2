@@ -1,5 +1,5 @@
 <template>
-    <div class="uk-card uk-card-body uk-card-default uk-width-1-1">
+    <div class="uk-card uk-card-body uk-width-1-1">
         <div v-show="transaction.cash || transaction.check || transaction.paid || transaction.scheduled || transaction.recurring || transaction.note || transaction.transfer" class="uk-card-badge uk-label">
             <span v-show="transaction.paid" uk-icon="icon: check" uk-tooltip="Paid"></span>
             <span v-show="!transaction.paid && transaction.scheduled" uk-icon="icon: calendar" uk-tooltip="Scheduled"></span>

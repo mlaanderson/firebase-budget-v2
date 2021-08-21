@@ -3,7 +3,7 @@
         <div class="uk-container uk-width-2-3@m" uk-height-viewport="expand: true" id="viewport">
             <div>
                 <transaction-detail v-for="transaction in periodTransactions" 
-                    :key="transaction.key" :transaction="transaction" @info="info"/>
+                    :key="transaction.key" :transaction="transaction" @info="info" :class="stripeTransactions(transaction)"/>
             </div>
         </div>
         <transaction-info ref="infoDiv" :transaction="selected"/>
@@ -60,6 +60,11 @@ export default {
         onTouchEnd() {
             lastTouch = null;
         },
+        stripeTransactions(tr) {
+            let categories = this.periodTransactions.map(tr => tr.category).filter((v, i, a) => a.indexOf(v) === i);
+            
+            return categories.indexOf(tr.category) % 2 === 0 ? "uk-card-default" : "uk-card-primary";
+        }
     },
     computed: {
         ...Vuex.mapGetters(['periodTransactions']),
