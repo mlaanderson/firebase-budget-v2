@@ -1,11 +1,13 @@
 <template>
     <div class="uk-card uk-card-body uk-card-default uk-width-1-1">
-        <div v-show="transaction.paid || transaction.scheduled || transaction.recurring || transaction.note" class="uk-card-badge uk-label">
+        <div v-show="transaction.cash || transaction.check || transaction.paid || transaction.scheduled || transaction.recurring || transaction.note || transaction.transfer" class="uk-card-badge uk-label">
             <span v-show="transaction.paid" uk-icon="icon: check" uk-tooltip="Paid"></span>
             <span v-show="!transaction.paid && transaction.scheduled" uk-icon="icon: calendar" uk-tooltip="Scheduled"></span>
             <span v-show="transaction.recurring" uk-icon="icon: future" uk-tooltip="Recurring Transaction"></span>
             <span v-show="transaction.note" uk-icon="icon: comment" :uk-tooltip="transaction.note"></span>
             <span v-show="transaction.check" uk-icon="icon: credit-card" :uk-tooltip="`Check ${transaction.check}`"></span>
+            <span v-show="transaction.cash" uk-icon="icon: fa-regular-money-bill-alt" uk-tooltip="Cash"></span>
+            <span v-show="transaction.transfer" uk-icon="icon: arrow-right" uk-tooltip="Transfer"></span>
         </div>
         <ul class="uk-iconnav">
             <li>

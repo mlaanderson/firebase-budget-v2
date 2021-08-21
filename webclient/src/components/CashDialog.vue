@@ -4,7 +4,7 @@
             <div class="uk-modal-header">
                 <h2 class="uk-modal-title">Cash Withdrawal</h2>
             </div>
-            <div class="uk-modal-body">
+            <div class="uk-modal-body" uk-overflow-auto>
                 <table class="uk-table">
                     <thead>
                         <tr><th>Denomination</th><th>Quantity</th><th>Total</th></tr>
@@ -61,7 +61,7 @@
                             <td>{{ currency(0.01 * pennies )}}</td>
                         </tr>
                     </tbody>
-                    <tfoot><tr><td colspan="3" style="text-align: right;">{{ currency(total) }}</td></tr></tfoot>
+                    <tfoot><tr><td colspan="3">TOTAL: {{ currency(total) }}</td></tr></tfoot>
                 </table>
             </div>
             <div class="uk-modal-footer uk-text-right">
@@ -77,6 +77,10 @@
     }
     td + td + td {
         text-align: right;
+    }
+    tfoot td {
+        text-align: right;
+        font-weight: bold;
     }
 </style>
 
