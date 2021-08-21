@@ -7,6 +7,7 @@
         <!-- dialogs -->
         <login-dialog ref="loginDialog"/>
         <transaction-editor ref="transactionEditor"/>
+        <recurring-editor ref="recurringEditor"/>
     </div>
 </template>
 
@@ -18,6 +19,7 @@ import UIkit from 'uikit';
 import TopNavBar from './components/TopNavBar.vue';
 import LoginDialog from './components/LoginDialog.vue';
 import TransactionEditor from './components/TransactionEditor.vue';
+import RecurringEditor from './components/RecurringEditor.vue';
 import AppFooter from './components/AppFooter.vue';
 import TransactionList from './components/TransactionList.vue';
 
@@ -37,7 +39,7 @@ Vue.mixin({
 export default {
     name: 'App',
     components: {
-        LoginDialog, TopNavBar, AppFooter, TransactionList, TransactionEditor
+        LoginDialog, TopNavBar, AppFooter, TransactionList, TransactionEditor, RecurringEditor
     },
     store,
     beforeCreate() {

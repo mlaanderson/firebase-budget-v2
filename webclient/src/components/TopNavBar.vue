@@ -133,7 +133,7 @@ export default {
             this.$root.$children[0].$refs.transactionEditor.newTransaction();
         },
         addRecurring() {
-
+            this.$root.$children[0].$refs.recurringEditor.newTransaction();
         },
         logout() {
             Firebase.auth.signOut();

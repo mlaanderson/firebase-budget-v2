@@ -38,20 +38,6 @@ import { Currency, ShortDate } from '../util/formats';
 
 Vue.use(Vuex);
 
-// export default interface Transaction extends Record {
-//     amount : number;
-//     cash? : boolean;
-//     category : string;
-//     check? : string;
-//     date : string;
-//     name : string;
-//     note? : string;
-//     paid?: boolean;
-//     scheduled?: boolean;
-//     recurring? : string;
-//     transfer? : boolean;
-// }
-
 export default {
     props: ['transaction'],
     methods: {
@@ -62,22 +48,28 @@ export default {
             window.editor = this.$root.$children[0].$refs.transactionEditor;
             UIkit.modal(this.$root.$children[0].$refs.transactionEditor.$el).show();
         },
-        editRecurring() {},
-        deleteTransaction() {
-            let transaction = this.transaction;
-            UIkit.modal.confirm(`Delete ${this.transaction.name} in ${this.transaction.category}?`).then(
-                function() {
-                    Firebase.transactions.child(transaction._key).remove();
-                },
-                function() {}
-            )
+        editRecurring() {
+            if (this.transaction.recurring) {
+                let transaction = this.recurring.filter(tr => tr._key === this.transaction.recurring)[0];
+                this.$root.$children[0].$refs.recurringEditor.transaction = JSON.parse(JSON.stringify(transaction));
+                window.editor = this.$root.$children[0].$refs.recurringEditor;
+                UIkit.modal(this.$root.$children[0].$refs.recurringEditor.$el).show();
+            }
+        },
+        async deleteTransaction() {
+            try {
+                await UIkit.modal.confirm(`Delete ${this.transaction.name} in ${this.transaction.category}?`)
+                Firebase.transactions.child(this.transaction._key).remove();
+            } catch {
+                // nothing to do 
+            }
         },
         showInfo() {
             this.$emit('info', this.transaction);
         },
     },
     computed: {
-        ...Vuex.mapState(['config'])
+        ...Vuex.mapState(['config', 'recurring'])
     },
 }
 </script>
