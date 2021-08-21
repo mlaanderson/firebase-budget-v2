@@ -40,10 +40,10 @@
                     -->
 
                     <li class="uk-nav-header">Exports</li>
-                    <li><button class="uk-button-text" @click.prevent="inactive('backup')"><span class="uk-margin-small-right" uk-icon="icon: download"/> Download Backup</button></li>
+                    <li><button class="uk-button-text" @click.prevent="backup"><span class="uk-margin-small-right" uk-icon="icon: download"/> Download Backup</button></li>
                     <li><button class="uk-button-text" @click.prevent="inactive('restore')"><span class="uk-margin-small-right" uk-icon="icon: upload"/> Restore Backup</button></li>
-                    <li><button class="uk-button-text" @click.prevent="inactive('spreadsheet')"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Spreadsheet</button></li>
-                    <li><button class="uk-button-text" @click.prevent="inactive('spreadsheet-period')"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Period Spreadsheet</button></li>
+                    <li><button class="uk-button-text" @click.prevent="spreadsheet"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Spreadsheet</button></li>
+                    <li><button class="uk-button-text" @click.prevent="spreadsheetPeriod"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Period Spreadsheet</button></li>
                     
                     <!-- <li class="uk-nav-header">Wizards</li>
                     <li class="uk-nav-header">Settings</li> -->
@@ -103,6 +103,7 @@ import UIkitFAAllIcons from '@septdirworkshop/ukfontawesome/dist/js/uikit-fa-all
 import { DateTime } from 'luxon';
 import { CalculatePeriod } from '../util/date';
 import SearchDialog from './SearchDialog.vue';
+import { Download } from '../util/file';
 
 UIkit.use(Icon);
 UIkit.use(UIkitFAAllIcons);
@@ -126,7 +127,7 @@ export default {
         canRedo() {
             return this.$store.state.canRedo;
         },
-        ...Vuex.mapState(['config']),
+        ...Vuex.mapState(['config', 'transactions']),
         ...Vuex.mapGetters(['periodTransactions'])
     },
     methods: {
@@ -207,6 +208,50 @@ export default {
         },
         logout() {
             Firebase.auth.signOut();
+        },
+        async backup() {
+            try {
+                let snapshot = await Firebase.db.ref(Firebase.uid).get();
+                let data = snapshot.val();
+                let stringData = JSON.stringify(data);
+                let filename = `budget-${this.period.start.toISODate()}.json`;
+
+                Download(stringData, filename, 'application/json');
+            } catch {
+                UIkit.notification('ERROR: Unable to download backup', 'danger');
+            }
+            UIkit.offcanvas(this.$refs.menuNav).hide();
+        },
+        spreadsheet() {
+            this.getSpreadsheet(`budget-${DateTime.today().toISODate()}.csv`, this.transactions);
+        },
+        spreadsheetPeriod() {
+            this.getSpreadsheet(`budget-${this.period.start.toISODate()}-${this.period.end.toISODate()}.csv`, this.periodTransactions);
+        },
+        getSpreadsheet(filename, transactions) {
+            try {
+                let result = [...transactions];
+                result.sort((a,b) => {
+                    if (a.category == b.category) {
+                        if (a.name.localeCompare(b.name) == 0) {
+                            return b.amount - a.amount;
+                        }
+                        return a.name.localeCompare(b.name);
+                    }
+                    return a.category.localeCompare(b.category);
+                });
+                let stringData = [
+                    'Category,Name,Date,Cash,Transfer,Amount,Paid,Memo',
+                    ...result.map(tr => `"${tr.category.replaceAll('"','""')}","${tr.name.replaceAll('"', '""')}","${tr.date.replaceAll('-','/')}",${tr.cash === true},${tr.transfer === true},${tr.amount.toFixed(2)},${tr.paid === true},"${tr.note ? tr.note.replaceAll('\r\n', '').replaceAll('"','""') : ''}"`)
+                ].join('\r\n');
+
+                Download(stringData, filename, 'text/csv');
+
+
+            } catch {
+                UIkit.notification('ERROR: Unable to export spreadsheet', 'danger');
+            }
+            UIkit.offcanvas(this.$refs.menuNav).hide();
         }
     },
 }
