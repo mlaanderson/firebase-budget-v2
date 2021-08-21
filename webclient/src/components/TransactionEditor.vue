@@ -49,7 +49,7 @@
                     <div class="uk-margin">
                         <label class="uk-form-label" for="edit-record-dialog-amount">Amount</label>
                         <div class="uk-form-controls">
-                            <input v-model="amount" class="uk-input" id="edit-record-dialog-amount" type="number" placeholder="Amount...">
+                            <input v-model="amount" class="uk-input" id="edit-record-dialog-amount" type="number" placeholder="Amount..." @wheel="() => {/* vue intercepts the wheel event without this */}">
                         </div>
                     </div>
                     <!-- <calculator-input ref="amount" :decimals="2" v-model="amount" label="Amount"/> -->
