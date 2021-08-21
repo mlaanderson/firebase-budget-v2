@@ -110,6 +110,15 @@ store.findTransactions = function(matches) {
     return [];
 }
 
+store.findText = function(text) {
+    if (this.state.transactions) {
+        return this.state.transactions.filter(tr => {
+            return (tr.name.toUpperCase().indexOf(text.toUpperCase()) > -1) || (tr.note && (tr.note.toUpperCase().indexOf(text.toUpperCase()) > -1));
+        }).sort((a,b) => a.date.localeCompare(b.date));
+    }
+    return [];
+}
+
 /**
  * Loads configuration changes into the store when changed
  * @param {DataSnapshot} snap Firebase snapshot

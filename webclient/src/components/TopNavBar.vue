@@ -25,7 +25,7 @@
             <div class="uk-offcanvas-bar">
                 <button class="uk-offcanvas-close" type="button" uk-close></button>
                 <ul class="uk-nav uk-nav-default">
-                    <li><button class="uk-button-text" @click.prevent="inactive('search')"><span class="uk-margin-small-right" uk-icon="icon: search"/>Search</button></li>
+                    <li><button class="uk-button-text" @click.prevent="search"><span class="uk-margin-small-right" uk-icon="icon: search"/>Search</button></li>
                     <li><button class="uk-button-text" @click.prevent="showCash"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-money-bill-alt"/>Cash</button></li>
                     
                     <li class="uk-nav-divider"></li>
@@ -58,7 +58,8 @@
 
         <!-- dialogs -->
         <calendar-dialog ref="calDialog" v-model="period" :startDate="config.startDate" :periodLength="config.periodLength"/>
-        <cash-dialog ref="cashDialog" id="cashDialog"/>
+        <cash-dialog ref="cashDialog"/>
+        <search-dialog ref="searchDialog"/>
 
         <!-- special -->
         <keyboard-event 
@@ -72,8 +73,8 @@
             @keydown.ctrl.y.prevent="redo"
             @keydown.meta.y.prevent="redo"
 
-            @keydown.ctrl.f.prevent="inactive('search')"
-            @keydown.meta.f.prevent="inactive('search')"
+            @keydown.ctrl.f.prevent="search"
+            @keydown.meta.f.prevent="search"
 
         />
     </div>
@@ -101,6 +102,7 @@ import Icon from 'uikit/dist/js/uikit-icons';
 import UIkitFAAllIcons from '@septdirworkshop/ukfontawesome/dist/js/uikit-fa-all-icons';
 import { DateTime } from 'luxon';
 import { CalculatePeriod } from '../util/date';
+import SearchDialog from './SearchDialog.vue';
 
 UIkit.use(Icon);
 UIkit.use(UIkitFAAllIcons);
@@ -108,7 +110,8 @@ Vue.use(Vuex);
 
 export default {
     components: {
-        CalendarDialog, CashDialog, KeyboardEvent
+        CalendarDialog, CashDialog, KeyboardEvent,
+        SearchDialog
     },
     computed: {
         period: {
@@ -172,6 +175,9 @@ export default {
             }
             this.$refs.cashDialog.cash = result;
             UIkit.modal(this.$refs.cashDialog.$el).show();
+        },
+        search() {
+            this.$refs.searchDialog.show();
         },
         menu() {
             UIkit.tooltip(this.$refs.btnMenu).hide();
