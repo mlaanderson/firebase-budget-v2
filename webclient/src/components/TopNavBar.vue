@@ -26,16 +26,18 @@
                 <button class="uk-offcanvas-close" type="button" uk-close></button>
                 <ul class="uk-nav uk-nav-default">
                     <li><button class="uk-button-text" @click.prevent="inactive('search')"><span class="uk-margin-small-right" uk-icon="icon: search"/>Search</button></li>
-                    <li><button class="uk-button-text" @click.prevent="inactive('cash')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-money-bill-alt"/>Cash</button></li>
+                    <li><button class="uk-button-text" @click.prevent="showCash"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-money-bill-alt"/>Cash</button></li>
                     
                     <li class="uk-nav-divider"></li>
                     
                     <li><button class="uk-button-text" :disabled="!canUndo" @click.prevent="undo"><span class="uk-margin-small-right" uk-icon="icon: history"/>Undo</button></li>
                     <li><button class="uk-button-text" :disabled="!canRedo" @click.prevent="redo"><span class="uk-margin-small-right" uk-icon="icon: future"/>Redo</button></li>
                     
+                    <!--
                     <li class="uk-nav-header">Charts</li>
                     <li><button class="uk-button-text" @click.prevent="inactive('chart-spending')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Period Spending</button></li>
                     <li><button class="uk-button-text" @click.prevent="inactive('chart-year-spending')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Year to Date Spending</button></li>
+                    -->
 
                     <li class="uk-nav-header">Exports</li>
                     <li><button class="uk-button-text" @click.prevent="inactive('backup')"><span class="uk-margin-small-right" uk-icon="icon: download"/> Download Backup</button></li>
@@ -56,6 +58,7 @@
 
         <!-- dialogs -->
         <calendar-dialog ref="calDialog" v-model="period" :startDate="config.startDate" :periodLength="config.periodLength"/>
+        <cash-dialog ref="cashDialog" id="cashDialog"/>
 
         <!-- special -->
         <keyboard-event 
@@ -91,6 +94,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import Firebase from '../data/firebase';
 import CalendarDialog from './CalendarDialog.vue';
+import CashDialog from './CashDialog.vue';
 import KeyboardEvent from './KeyboardEvent.vue';
 import UIkit from 'uikit';
 import Icon from 'uikit/dist/js/uikit-icons';
@@ -104,7 +108,7 @@ Vue.use(Vuex);
 
 export default {
     components: {
-        CalendarDialog, KeyboardEvent
+        CalendarDialog, CashDialog, KeyboardEvent
     },
     computed: {
         period: {
@@ -119,7 +123,8 @@ export default {
         canRedo() {
             return this.$store.state.canRedo;
         },
-        ...Vuex.mapState(['config'])
+        ...Vuex.mapState(['config']),
+        ...Vuex.mapGetters(['periodTransactions'])
     },
     methods: {
         inactive(str="") {
@@ -132,6 +137,41 @@ export default {
         redo() {
             Firebase.redo();
             UIkit.offcanvas(this.$refs.menuNav).hide();
+        },
+        showCash() {
+            UIkit.offcanvas(this.$refs.menuNav).hide();
+            let result = {
+                '100.00': 0,
+                '50.00': 0,
+                '20.00': 0,
+                '10.00': 0,
+                '5.00': 0,
+                '1.00': 0,
+                '0.25': 0,
+                '0.10' : 0,
+                '0.05': 0,
+                '0.01': 0,
+                total: 0
+            };
+
+            if (this.periodTransactions) {
+                let trs = this.periodTransactions.filter(tr => (tr.cash === true) && (tr.amount < 0));
+                for (let tr of trs) {
+                    let amount = Math.abs(tr.amount);
+                    result.total += amount;
+                    for (let k of [100.00, 50.00, 20.00, 10.00, 5.00, 1.00, 0.25, 0.10, 0.05]) {
+                        let qty = Math.floor(amount / k);
+                        if (qty > 0) {
+                            let key = k.toFixed(2);
+                            result[key] += qty;
+                            amount -= qty * k;
+                        }
+                    }
+                    result['0.01'] += Math.round(amount / 0.01);
+                }
+            }
+            this.$refs.cashDialog.cash = result;
+            UIkit.modal(this.$refs.cashDialog.$el).show();
         },
         menu() {
             UIkit.tooltip(this.$refs.btnMenu).hide();
