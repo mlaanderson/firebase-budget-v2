@@ -6,6 +6,8 @@ import { CalculatePeriod } from '../util/date';
 
 Vue.use(Vuex);
 
+window.Firebase = Firebase;
+
 const store = new Vuex.Store({
     /**
      * Populate state with some default values to avoid errors
@@ -39,11 +41,13 @@ const store = new Vuex.Store({
                 let unsorted = state.transactions.filter(tr => (start <= tr.date) && (tr.date <= end));
                 // sort by category, then name, then amount (desc)
                 for (let category of state.config.categories) {
-                    result.push(
-                        ...(unsorted.filter(tr => tr.category === category)
-                        .sort((a,b) => a.name.localeCompare(b))
-                        .sort((a,b) => b.amount - a.amount))
-                    );
+                    result.push(...unsorted.filter(tr => tr.category === category)
+                    .sort((a,b) => {
+                        if (a.name.localeCompare(b.name) == 0) {
+                            return b.amount - a.amount;
+                        }
+                        return a.name.localeCompare(b.name);
+                    }));
                 }
             }
             
@@ -127,21 +131,21 @@ function onTransaction(snap) {
     store.commit('set', { key: 'transactions', value: result });
 }
 
-// function onRecurring(snap) {
-//     let recurrings = snap.val();
-//     let result = [];
-//     for (let key in recurrings) {
-//         result.push({ _key: key, ...recurrings[key] });
-//     }
-//     store.commit('set', { key: 'recurring', value: result });
-// }
+function onRecurring(snap) {
+    let recurrings = snap.val();
+    let result = [];
+    for (let key in recurrings) {
+        result.push({ _key: key, ...recurrings[key] });
+    }
+    store.commit('set', { key: 'recurring', value: result });
+}
 
 Firebase.auth.onAuthStateChanged((auth) => {
     if (auth) {
         // get ready to populate the state
         Firebase.db.ref(`${Firebase.uid}/config`).on('value', onConfig);
         Firebase.db.ref(`${Firebase.uid}/accounts/budget/transactions`).on('value', onTransaction);
-        // Firebase.db.ref(`${Firebase.uid}/accounts/budget/recurring`).on('value', onRecurring);
+        Firebase.db.ref(`${Firebase.uid}/accounts/budget/recurring`).on('value', onRecurring);
     } else {
         // empty the state
         store.commit('setConfig', { key: 'categories', value: ['Income'] });
