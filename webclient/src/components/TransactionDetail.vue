@@ -59,7 +59,7 @@ export default {
         async deleteTransaction() {
             try {
                 await UIkit.modal.confirm(`Delete ${this.transaction.name} in ${this.transaction.category}?`)
-                Firebase.transactions.child(this.transaction._key).remove();
+                await Firebase.deleteTransaction(this.transaction);
             } catch {
                 // nothing to do 
             }

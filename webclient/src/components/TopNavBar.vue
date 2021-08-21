@@ -25,30 +25,30 @@
             <div class="uk-offcanvas-bar">
                 <button class="uk-offcanvas-close" type="button" uk-close></button>
                 <ul class="uk-nav uk-nav-default">
-                    <li><a href="#" @click.prevent="inactive('search')"><span class="uk-margin-small-right" uk-icon="icon: search"/>Search</a></li>
-                    <li><a href="#" @click.prevent="inactive('cash')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-money-bill-alt"/>Cash</a></li>
+                    <li><button class="uk-button-text" @click.prevent="inactive('search')"><span class="uk-margin-small-right" uk-icon="icon: search"/>Search</button></li>
+                    <li><button class="uk-button-text" @click.prevent="inactive('cash')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-money-bill-alt"/>Cash</button></li>
                     
                     <li class="uk-nav-divider"></li>
                     
-                    <li><a href="#" @click.prevent="inactive('undo')"><span class="uk-margin-small-right" uk-icon="icon: history"/>Undo</a></li>
-                    <li><a href="#" @click.prevent="inactive('redo')"><span class="uk-margin-small-right" uk-icon="icon: future"/>Redo</a></li>
+                    <li><button class="uk-button-text" :disabled="!canUndo" @click.prevent="undo"><span class="uk-margin-small-right" uk-icon="icon: history"/>Undo</button></li>
+                    <li><button class="uk-button-text" :disabled="!canRedo" @click.prevent="redo"><span class="uk-margin-small-right" uk-icon="icon: future"/>Redo</button></li>
                     
                     <li class="uk-nav-header">Charts</li>
-                    <li><a href="#" @click.prevent="inactive('chart-spending')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Period Spending</a></li>
-                    <li><a href="#" @click.prevent="inactive('chart-year-spending')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Year to Date Spending</a></li>
+                    <li><button class="uk-button-text" @click.prevent="inactive('chart-spending')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Period Spending</button></li>
+                    <li><button class="uk-button-text" @click.prevent="inactive('chart-year-spending')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Year to Date Spending</button></li>
 
                     <li class="uk-nav-header">Exports</li>
-                    <li><a href="#" @click.prevent="inactive('backup')"><span class="uk-margin-small-right" uk-icon="icon: download"/> Download Backup</a></li>
-                    <li><a href="#" @click.prevent="inactive('restore')"><span class="uk-margin-small-right" uk-icon="icon: upload"/> Restore Backup</a></li>
-                    <li><a href="#" @click.prevent="inactive('spreadsheet')"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Spreadsheet</a></li>
-                    <li><a href="#" @click.prevent="inactive('spreadsheet-period')"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Period Spreadsheet</a></li>
+                    <li><button class="uk-button-text" @click.prevent="inactive('backup')"><span class="uk-margin-small-right" uk-icon="icon: download"/> Download Backup</button></li>
+                    <li><button class="uk-button-text" @click.prevent="inactive('restore')"><span class="uk-margin-small-right" uk-icon="icon: upload"/> Restore Backup</button></li>
+                    <li><button class="uk-button-text" @click.prevent="inactive('spreadsheet')"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Spreadsheet</button></li>
+                    <li><button class="uk-button-text" @click.prevent="inactive('spreadsheet-period')"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Period Spreadsheet</button></li>
                     
                     <!-- <li class="uk-nav-header">Wizards</li>
                     <li class="uk-nav-header">Settings</li> -->
                     
                     <li class="uk-nav-divider"></li>
                     
-                    <li><a href="#" @click.prevent="logout"><span class="uk-margin-small-right" uk-icon="icon: sign-out"></span> Sign Out</a></li>
+                    <li><button class="uk-button-text" @click.prevent="logout"><span class="uk-margin-small-right" uk-icon="icon: sign-out"></span> Sign Out</button></li>
                 </ul>
 
             </div>
@@ -64,10 +64,10 @@
             @keydown.ctrl.right.prevent="next"
             @keydown.meta.right.prevent="next"
 
-            @keydown.ctrl.z.prevent="inactive('undo')"
-            @keydown.meta.z.prevent="inactive('undo')"
-            @keydown.ctrl.y.prevent="inactive('redo')"
-            @keydown.meta.y.prevent="inactive('redo')"
+            @keydown.ctrl.z.prevent="undo"
+            @keydown.meta.z.prevent="undo"
+            @keydown.ctrl.y.prevent="redo"
+            @keydown.meta.y.prevent="redo"
 
             @keydown.ctrl.f.prevent="inactive('search')"
             @keydown.meta.f.prevent="inactive('search')"
@@ -75,6 +75,16 @@
         />
     </div>
 </template>
+
+<style scoped>
+    button.uk-button-text {
+        border-style: none !important;
+        cursor: pointer;
+    }
+    button.uk-button-text:disabled {
+        cursor: default;
+    }
+</style>
 
 <script>
 import Vue from 'vue';
@@ -103,11 +113,25 @@ export default {
                 this.$store.commit('set', { key: 'period', value: val });
             }
         },
+        canUndo() {
+            return this.$store.state.canUndo;
+        },
+        canRedo() {
+            return this.$store.state.canRedo;
+        },
         ...Vuex.mapState(['config'])
     },
     methods: {
         inactive(str="") {
             console.log(`Inactive${str !== '' ? ': ' + str : ''}`);
+        },
+        undo() {
+            Firebase.undo();
+            UIkit.offcanvas(this.$refs.menuNav).hide();
+        },        
+        redo() {
+            Firebase.redo();
+            UIkit.offcanvas(this.$refs.menuNav).hide();
         },
         menu() {
             UIkit.tooltip(this.$refs.btnMenu).hide();

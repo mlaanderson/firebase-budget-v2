@@ -22,7 +22,9 @@ const store = new Vuex.Store({
             startDate: DateTime.fromISO('2016-06-17').startOf('day'),
             categories: ["Income"],
             theme: "default"
-        }
+        },
+        canUndo: false,
+        canRedo: false
     },
     mutations: {
         setValue: (state, val) => state.value = val,
@@ -85,7 +87,7 @@ const store = new Vuex.Store({
             result.sort((a,b) => a.date.localeCompare(b.date));
 
             return result;
-        },
+        }
     }
 });
 
@@ -152,5 +154,8 @@ Firebase.auth.onAuthStateChanged((auth) => {
         store.commit('set', { key: 'transactions', value: [] });
     }
 });
+
+// configure the store for firebase undo/redo
+Firebase.store = store;
 
 export default store;
