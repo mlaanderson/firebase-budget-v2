@@ -5,7 +5,7 @@
                 <h2 class="uk-modal-title">Cash Withdrawal</h2>
             </div>
             <div class="uk-modal-body" uk-overflow-auto>
-                <table class="uk-table">
+                <table class="uk-table uk-table-small">
                     <thead>
                         <tr><th>Denomination</th><th>Quantity</th><th>Total</th></tr>
                     </thead>
