@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@septdirworkshop/ukfontawesome": "^5.15.1",
-    "chart.js": "^3.5.0",
     "core-js": "^3.6.5",
     "vue": "^2.6.11"
   },
