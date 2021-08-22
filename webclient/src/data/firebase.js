@@ -349,6 +349,16 @@ class Firebase {
         }
         this._saveHistory();
     }
+
+    async restoreBudget(data) {
+        if (this.isUserValid) {
+            try {
+                await this.db.ref(`${this.uid}/accounts/budget`).set(data);
+            } catch {
+                // do what?
+            }
+        }
+    }
 }
 
 export default new Firebase();

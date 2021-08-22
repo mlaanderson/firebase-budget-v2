@@ -45,11 +45,11 @@
 
                     <li class="uk-nav-header">Exports</li>
                     <li><button class="uk-button-text" @click.prevent="backup"><span class="uk-margin-small-right" uk-icon="icon: download"/> Download Backup</button></li>
-                    <li><button class="uk-button-text" @click.prevent="inactive('restore')"><span class="uk-margin-small-right" uk-icon="icon: upload"/> Restore Backup</button></li>
+                    <li><button class="uk-button-text" @click.prevent="restore"><span class="uk-margin-small-right" uk-icon="icon: upload"/> Restore Backup</button></li>
                     <li><button class="uk-button-text" @click.prevent="spreadsheet"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Spreadsheet</button></li>
                     <li><button class="uk-button-text" @click.prevent="spreadsheetPeriod"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Period Spreadsheet</button></li>
                     
-                    <!-- <li class="uk-nav-header">Wizards</li>
+                    <!-- <li class="uk-nav-header">Configuration</li>
                     <li class="uk-nav-header">Settings</li> -->
                     
                     <li class="uk-nav-divider"></li>
@@ -107,11 +107,13 @@ import UIkitFAAllIcons from '@septdirworkshop/ukfontawesome/dist/js/uikit-fa-all
 import { DateTime } from 'luxon';
 import { CalculatePeriod } from '../util/date';
 import SearchDialog from './SearchDialog.vue';
-import { Download } from '../util/file';
+import { Download, Upload } from '../util/file';
 
 UIkit.use(Icon);
 UIkit.use(UIkitFAAllIcons);
 Vue.use(Vuex);
+
+window.Upload = Upload;
 
 export default {
     components: {
@@ -225,6 +227,25 @@ export default {
                 UIkit.notification('ERROR: Unable to download backup', 'danger');
             }
             UIkit.offcanvas(this.$refs.menuNav).hide();
+        },
+        async restore() {
+            try {
+                let text = await Upload('.json');
+                let data = JSON.parse(text);
+                if ('accounts' in data && 'budget' in data.accounts) {
+                    // this appears to be budget data
+                    UIkit.modal.confirm('Overwrite your budget? Existing entries will be lost.').then(
+                        function() {
+                            // OK pressed
+                        },
+                        function() {
+                            // cancel pressed
+                        }
+                    )
+                }
+            } catch {
+                // don't restore
+            }
         },
         spreadsheet() {
             this.getSpreadsheet(`budget-${DateTime.today().toISODate()}.csv`, this.transactions);
