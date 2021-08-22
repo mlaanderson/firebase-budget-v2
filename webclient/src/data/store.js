@@ -85,6 +85,11 @@ const store = new Vuex.Store({
             }
             result = Object.entries(result).map(el => { return { date: el[0], amount: el[1] }});
             result.sort((a,b) => a.date.localeCompare(b.date));
+            let total = 0;
+            result.forEach(d => {
+                total += d.amount;
+                d.amount = total;
+            });
 
             return result;
         }

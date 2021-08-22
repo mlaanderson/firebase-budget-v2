@@ -1,24 +1,27 @@
 <template>
-    <div class="uk-section uk-section-primary uk-height-max-small">
-        <div class="uk-container">
-            <div class="uk-text-right">Balance: {{ currency(budgetBalance) }}</div>
-            <div class="uk-text-right">Bank: {{ currency(bankBalance) }}</div>
-        </div>
-        <chart-component/>
-    </div>  
+    <span>
+        <strip-chart class="uk-section uk-section-primary bdg-chart"/>
+    </span>
 </template>
+
+<style scoped>
+    .bdg-chart {
+        padding-bottom: 5px !important;
+        padding-top: 5px !important;
+    }
+</style>
 
 <script>
 import Vue from 'vue';
 import Vuex from 'vuex';
-import ChartComponent from './ChartComponent.vue';
 import { Currency } from '../util/formats';
+import StripChart from './StripChart.vue';
 
 Vue.use(Vuex);
 
 export default {
     components: {
-        ChartComponent
+        StripChart
     },
     computed: {
         ...Vuex.mapGetters(['dailyBalances', 'budgetBalance', 'bankBalance']),
