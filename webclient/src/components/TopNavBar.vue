@@ -9,11 +9,15 @@
                 <li><a href="#" ref="btnNext" @click.prevent="next" uk-icon="icon: chevron-right" uk-tooltip="Next Period"></a></li>
             </ul>
         </div>
-        <div class="uk-navbar-center">
-            {{ period.start.toLocaleString({ month: 'short', day: 'numeric' }) }} 
-            <span class="uk-visible@s">- {{ period.end.toLocaleString({ month: 'short', day: 'numeric' }) }}</span>
+        <div class="uk-visible@s uk-navbar-center">
+            {{ period.start.toLocaleString({ month: 'short', day: 'numeric' }) }} -
+            {{ period.end.toLocaleString({ month: 'short', day: 'numeric' }) }}
         </div>
         <div class="uk-navbar-right">
+            <span class="uk-hidden@s">
+                {{ period.start.toLocaleString({ month: 'numeric', day: 'numeric' }) }} - 
+                {{ period.end.toLocaleString({ month: 'numeric', day: 'numeric' }) }}&nbsp;
+            </span>
             <ul class="uk-iconnav">
                 <li><a href="#" ref="btnAddTransaction" @click.prevent="addTransaction" uk-icon="icon: plus" uk-tooltip="Add New Transaction"></a></li>
                 <li><a href="#" ref="btnAddRecurring" @click.prevent="addRecurring" uk-icon="icon: future" uk-tooltip="Add New Recurring Transaction"></a></li>
