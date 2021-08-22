@@ -246,7 +246,6 @@ export default {
                 return 0;
             },
             set: function(val) {
-                console.log(typeof val, val);
                 if (this.transaction) {
                     this.transaction.amount = parseFloat(val) * (this.deposit ? 1 : -1);
                 }

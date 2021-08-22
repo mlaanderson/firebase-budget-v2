@@ -58,7 +58,6 @@ export default {
             let period = CalculatePeriod(date, 
                 this.$store.state.config.startDate, 
                 this.$store.state.config.periodLength);
-            console.log(date.toString(), period);
             this.period = period;
         },
     }
