@@ -37,11 +37,9 @@
                     <li><button class="uk-button-text" :disabled="!canUndo" @click.prevent="undo"><span class="uk-margin-small-right" uk-icon="icon: history"/>Undo</button></li>
                     <li><button class="uk-button-text" :disabled="!canRedo" @click.prevent="redo"><span class="uk-margin-small-right" uk-icon="icon: future"/>Redo</button></li>
                     
-                    <!--
-                    <li class="uk-nav-header">Charts</li>
-                    <li><button class="uk-button-text" @click.prevent="inactive('chart-spending')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Period Spending</button></li>
-                    <li><button class="uk-button-text" @click.prevent="inactive('chart-year-spending')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Year to Date Spending</button></li>
-                    -->
+                    <!-- <li class="uk-nav-header">Charts</li>
+                    <li><button class="uk-button-text" @click.prevent="chartSpending"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Period Spending</button></li>
+                    <li><button class="uk-button-text" @click.prevent="inactive('chart-year-spending')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Year to Date Spending</button></li>                    -->
 
                     <li class="uk-nav-header">Exports</li>
                     <li><button class="uk-button-text" @click.prevent="backup"><span class="uk-margin-small-right" uk-icon="icon: download"/> Download Backup</button></li>
@@ -64,6 +62,7 @@
         <calendar-dialog ref="calDialog" v-model="period" :startDate="config.startDate" :periodLength="config.periodLength"/>
         <cash-dialog ref="cashDialog"/>
         <search-dialog ref="searchDialog"/>
+        <chart-dialog ref="chartDialog"/>
 
         <!-- special -->
         <keyboard-event 
@@ -100,6 +99,7 @@ import Vuex from 'vuex';
 import Firebase from '../data/firebase';
 import CalendarDialog from './CalendarDialog.vue';
 import CashDialog from './CashDialog.vue';
+import ChartDialog from './ChartDialog.vue';
 import KeyboardEvent from './KeyboardEvent.vue';
 import UIkit from 'uikit';
 import Icon from 'uikit/dist/js/uikit-icons';
@@ -118,7 +118,7 @@ window.Upload = Upload;
 export default {
     components: {
         CalendarDialog, CashDialog, KeyboardEvent,
-        SearchDialog
+        SearchDialog, ChartDialog
     },
     computed: {
         period: {
@@ -277,6 +277,9 @@ export default {
                 UIkit.notification('ERROR: Unable to export spreadsheet', 'danger');
             }
             UIkit.offcanvas(this.$refs.menuNav).hide();
+        },
+        chartSpending() {
+            this.$refs.chartDialog.show();
         }
     },
 }

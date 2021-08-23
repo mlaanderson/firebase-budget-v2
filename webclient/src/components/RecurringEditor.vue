@@ -14,7 +14,7 @@
             </div>
 
             <div class="uk-modal-body" uk-overflow-auto>
-                <form class="uk-form-stacked">
+                <form class="uk-form-stacked" @keypress.enter="save">
 
                     <div class="uk-margin">
                         <label class="uk-form-label" for="edit-recur-dialog-period">Period</label>
@@ -122,7 +122,8 @@ export default {
         }
     },
     methods: {
-        save() {
+        save(e) {
+            if (e.target.tagName.toUpperCase() === 'TEXTAREA') return;
             let editor = this;
             this.transaction.amount = Math.abs(this.transaction.amount) * (this.deposit ? 1 : -1);
             // set the active date so the server knows to create the transactions
