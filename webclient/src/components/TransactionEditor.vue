@@ -1,5 +1,5 @@
 <template>
-    <div id="edit-record-dialog" uk-modal="bg-close: false">
+    <div  uk-modal="bg-close: false">
         <div class="uk-modal-dialog">
             <div class="uk-modal-header">
                 <h2 class="uk-modal-title">{{ mode }} Transaction</h2>
@@ -11,14 +11,14 @@
                     <div class="uk-margin">
                         <label class="uk-form-label" for="edit-record-dialog-date">Date</label>
                         <div class="uk-form-controls">
-                            <input v-model="date" class="uk-input" id="edit-record-dialog-date" type="date" placeholder="Some text...">
+                            <input v-model="date" class="uk-input"  type="date" placeholder="Some text...">
                         </div>
                     </div>
                 
                     <div class="uk-margin">
                         <label class="uk-form-label" for="edit-record-dialog-category">Category</label>
                         <div class="uk-form-controls">
-                            <select v-model="category" class="uk-select" id="edit-record-dialog-category">
+                            <select v-model="category" class="uk-select" >
                                 <option v-for="category in config.categories" :key="category">{{ category }}</option>
                             </select>
                         </div>
@@ -27,44 +27,44 @@
                     <div class="uk-margin">
                         <label class="uk-form-label" for="edit-record-dialog-name">Name</label>
                         <div class="uk-form-controls">
-                            <input v-model="name" class="uk-input" id="edit-record-dialog-name" type="text" placeholder="Name...">
+                            <input v-model="name" class="uk-input"  type="text" placeholder="Name...">
                         </div>
                     </div>
 
                     <div class="uk-margin">
                         <div class="uk-form-controls">
-                            <label><input v-model="deposit" class="uk-checkbox" type="checkbox" id="edit-record-dialog-deposit"> Deposit</label><br>
-                            <label><input v-model="cash" class="uk-checkbox" type="checkbox" id="edit-record-dialog-cash"> Cash</label><br>
-                            <label><input v-model="transfer" class="uk-checkbox" type="checkbox" id="edit-record-dialog-transfer"> Transfer</label><br>
+                            <label><input v-model="deposit" class="uk-checkbox" type="checkbox" > Deposit</label><br>
+                            <label><input v-model="cash" class="uk-checkbox" type="checkbox" > Cash</label><br>
+                            <label><input v-model="transfer" class="uk-checkbox" type="checkbox" > Transfer</label><br>
                         </div>
                     </div>
 
                     <div class="uk-margin">
                         <label class="uk-form-label" for="edit-record-dialog-check">Check Number</label>
                         <div class="uk-form-controls">
-                            <input v-model="check" class="uk-input" id="edit-record-dialog-check" type="text" placeholder="Name...">
+                            <input v-model="check" class="uk-input"  type="text" placeholder="Name...">
                         </div>
                     </div>
 
                     <div class="uk-margin">
                         <label class="uk-form-label" for="edit-record-dialog-amount">Amount</label>
                         <div class="uk-form-controls">
-                            <input v-model="amount" class="uk-input" id="edit-record-dialog-amount" type="number" placeholder="Amount..." @wheel="() => {/* vue intercepts the wheel event without this */}">
+                            <input v-model="amount" class="uk-input"  type="number" placeholder="Amount..." @wheel="() => {/* vue intercepts the wheel event without this */}">
                         </div>
                     </div>
                     <!-- <calculator-input ref="amount" :decimals="2" v-model="amount" label="Amount"/> -->
                 
                     <div class="uk-margin">
                         <div class="uk-form-controls">
-                            <label><input v-model="paid" class="uk-checkbox" type="checkbox" id="edit-record-dialog-paid"> Paid</label><br>
-                            <label><input v-model="scheduled" class="uk-checkbox" type="checkbox" id="edit-record-dialog-scheduled"> Scheduled</label><br>
+                            <label><input v-model="paid" class="uk-checkbox" type="checkbox" > Paid</label><br>
+                            <label><input v-model="scheduled" class="uk-checkbox" type="checkbox" > Scheduled</label><br>
                         </div>
                     </div>
 
                     <div class="uk-margin">
                         <label class="uk-form-lable" for="edit-record-dialog-note">Notes</label>
                         <div class="uk-form-controls">
-                            <textarea v-model="note" class="uk-textarea" rows="5" id="edit-record-dialog-note" placeholder="Notes..."></textarea>
+                            <textarea v-model="note" class="uk-textarea" rows="5"  placeholder="Notes..."></textarea>
                         </div>
                     </div>
 
@@ -72,7 +72,7 @@
             </div>
             <div class="uk-modal-footer uk-text-right">
                 <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
-                <button @click="save" class="uk-button uk-button-primary" type="button" id="edit-record-dialog-save">Save</button>
+                <button @click="save" class="uk-button uk-button-primary" type="button" >Save</button>
             </div>
 
         </div>
