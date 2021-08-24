@@ -47,10 +47,10 @@
                     <li><button class="uk-button-text" @click.prevent="spreadsheet"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Spreadsheet</button></li>
                     <li><button class="uk-button-text" @click.prevent="spreadsheetPeriod"><span class="uk-margin-small-right" uk-icon="icon: pull"/> Download Period Spreadsheet</button></li>
                     
-                    <!-- <li class="uk-nav-header">Configuration</li>
-                    <li class="uk-nav-header">Settings</li> -->
-                    
                     <li class="uk-nav-divider"></li>
+                    
+                    <li class="uk-nav-header">Account</li>
+                    <li><span class="uk-margin-small-right" uk-icon="icon: user"/> {{ user }}</li>
                     
                     <li><button class="uk-button-text" @click.prevent="logout"><span class="uk-margin-small-right" uk-icon="icon: sign-out"></span> Sign Out</button></li>
                 </ul>
@@ -121,6 +121,9 @@ export default {
         SearchDialog, ChartDialog
     },
     computed: {
+        user() {
+            return Firebase.isUserValid ? Firebase.auth.currentUser.email : "Not logged in";
+        },
         period: {
             get: function() { return this.$store.state.period; },
             set: function(val) { 
