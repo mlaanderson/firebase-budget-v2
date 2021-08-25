@@ -1,13 +1,8 @@
 <template>
-    <div class="uk-inline">
-        <span class="uk-hidden-notouch">
-            <a class="uk-form-icon uk-form-icon-flip" uk-icon="icon: grid" href="" @click.prevent="changeInputMode"></a>
-        </span>
-        <input class="uk-input" ref="input" type="text" inputmode="decimal" :class="valid ? '' : 'invalid'" 
-            :name="name" :value="value" @change="onChange" @keydown="onKeyDown" 
-            @wheel.exact.prevent="(evt) => onMouseWheel(evt,1)" 
-            @wheel.shift.exact.prevent="(evt) => onMouseWheel(evt,5)"/>
-    </div>
+    <input class="uk-input" ref="input" type="text" inputmode="decimal" :class="valid ? '' : 'invalid'" 
+        :value="value" @change="onChange" @keydown="onKeyDown" 
+        @wheel.exact.prevent="(evt) => onMouseWheel(evt,1)" 
+        @wheel.shift.exact.prevent="(evt) => onMouseWheel(evt,5)"/>
 </template>
 
 <script>
@@ -22,10 +17,6 @@ export default {
     props: {
         value: {
             type: Number,
-            required: true
-        },
-        name: {
-            type: String,
             required: true
         },
         decimals: {
@@ -83,8 +74,11 @@ export default {
             }
             return Number.NaN;
         },
-        changeInputMode: function() {
-            if (this.$refs.input.getAttribute('inputmode') === "decimal") {
+        performOutstanding: function() {
+            this.calculate(this.$refs.input.value);
+        },
+        changeInputMode: function(extended) {
+            if (extended) {
                 this.$refs.input.setAttribute('inputmode', '')
             } else {
                 this.$refs.input.setAttribute('inputmode', "decimal");
