@@ -98,6 +98,7 @@ export default {
             this.$refs.amount.changeInputMode(extended);
         },
         save(e) {
+            if (e.target === this.$refs.amount.$el) return;
             if (e.target.tagName.toUpperCase() === 'TEXTAREA') return;
             let editor = this;
             this.$refs.amount.performOutstanding();
