@@ -1,12 +1,21 @@
 <template>
     <div ref="chart"></div>
 </template>
+
+<style scoped>
+    .totals {
+        position: relative;
+        z-index: 999;
+        left: 0px;
+        top: 0px;
+    }
+</style>
+
 <script>
 import Vue from 'vue';
 import Vuex from 'vuex';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
-// import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 import am4themes_amchartsdark from "@amcharts/amcharts4/themes/amchartsdark";
 import Firebase from '../data/firebase';
 import { DateTime } from 'luxon';
@@ -18,7 +27,7 @@ am4core.useTheme(am4themes_amchartsdark);
 
 export default {
     computed: {
-        ...Vuex.mapGetters(['dailyBalances', 'budgetBalance', 'bankBalance']),
+        ...Vuex.mapGetters(['dailyBalances']),
         ...Vuex.mapState(['period']),
         data: {
             get() {
@@ -53,29 +62,15 @@ export default {
         dailyBalances(newList) {
             this.data = newList;
             this.chart.events.once('datavalidated', () => this.zoom(this.period));
-            this.totalTitle.text = `Balance: ${Currency.format(this.budgetBalance)}\nBank: ${Currency.format(this.bankBalance)}`;
         },
         period(period) {
             this.zoom(period);
-            this.totalTitle.text = `Balance: ${Currency.format(this.budgetBalance)}\nBank: ${Currency.format(this.bankBalance)}`;
         }
     },
     mounted() {
         let chart = am4core.create(this.$el, am4charts.XYChart);
         chart.data = [];
         chart.responsive.enabled = true;
-        
-
-        // add the period and bank totals
-        let topContainer = chart.chartContainer.createChild(am4core.Container);
-        topContainer.layout = "absolute";
-        topContainer.toBack();
-        topContainer.paddingBottom = 15;
-        topContainer.width = am4core.percent(100);
-
-        let totalTitle = topContainer.createChild(am4core.Label);
-        totalTitle.text = "Balance: $0.00\nBank: $0.00";
-        totalTitle.align = "right";
 
         let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
         let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
@@ -87,7 +82,8 @@ export default {
         let series = chart.series.push(new am4charts.StepLineSeries());
         series.dataFields.valueY = 'amount';
         series.dataFields.dateX = 'date';
-        series.tooltipText = "{dateString}: {valueString}"
+        series.tooltipText = "{dateString}\n{valueString}";
+        
 
         chart.cursor = new am4charts.XYCursor();
         chart.cursor.xAxis = dateAxis;
@@ -102,17 +98,13 @@ export default {
         chart.scrollbarX.parent = chart.bottomAxesContainer;
         chart.zoomOutButton.disabled = true;
 
-
-        window.chart = chart;
         this.chart = chart;
         this.dateAxis = dateAxis;
-        this.totalTitle = totalTitle;
 
         Firebase.auth.onAuthStateChanged((auth) => {
             if (auth) {
                 this.data = this.dailyBalances;
                 this.chart.events.once('datavalidated', () => this.zoom(this.period));
-                totalTitle.text = `Balance: ${Currency.format(this.budgetBalance)}\nBank: ${Currency.format(this.bankBalance)}`;
             } else {
                 this.data = [];
             }

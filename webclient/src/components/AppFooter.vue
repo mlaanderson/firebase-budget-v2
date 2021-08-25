@@ -1,5 +1,9 @@
 <template>
     <span>
+        <div ref="totals" class="totals uk-section-primary">
+            Budget: {{ currency(budgetBalance) }}&nbsp;<br/>
+            Bank: {{ currency(bankBalance) }}&nbsp;
+        </div>
         <strip-chart class="uk-section uk-section-primary bdg-chart"/>
     </span>
 </template>
@@ -8,6 +12,15 @@
     .bdg-chart {
         padding-bottom: 5px !important;
         padding-top: 5px !important;
+    }
+
+    .totals {
+        position: relative;
+        z-index: 999;
+        top: 1.5em;
+        left: 0;
+        width: 100%;/*calc(100% - 15px);*/
+        text-align: right;
     }
 </style>
 
