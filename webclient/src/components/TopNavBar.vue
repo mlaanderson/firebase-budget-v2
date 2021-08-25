@@ -50,7 +50,7 @@
                     <li class="uk-nav-divider"></li>
                     
                     <li class="uk-nav-header">Account</li>
-                    <li><span class="uk-margin-small-right" uk-icon="icon: user"/> {{ user }}</li>
+                    <li><span ref="username" class="uk-margin-small-right" uk-icon="icon: user"/> {{ user }}</li>
                     
                     <li><button class="uk-button-text" @click.prevent="logout"><span class="uk-margin-small-right" uk-icon="icon: sign-out"></span> Sign Out</button></li>
                 </ul>
@@ -62,7 +62,6 @@
         <calendar-dialog ref="calDialog" v-model="period" :startDate="config.startDate" :periodLength="config.periodLength"/>
         <cash-dialog ref="cashDialog"/>
         <search-dialog ref="searchDialog"/>
-        <chart-dialog ref="chartDialog"/>
 
         <!-- special -->
         <keyboard-event 
@@ -99,7 +98,6 @@ import Vuex from 'vuex';
 import Firebase from '../data/firebase';
 import CalendarDialog from './CalendarDialog.vue';
 import CashDialog from './CashDialog.vue';
-import ChartDialog from './ChartDialog.vue';
 import KeyboardEvent from './KeyboardEvent.vue';
 import UIkit from 'uikit';
 import Icon from 'uikit/dist/js/uikit-icons';
@@ -118,12 +116,14 @@ window.Upload = Upload;
 export default {
     components: {
         CalendarDialog, CashDialog, KeyboardEvent,
-        SearchDialog, ChartDialog
+        SearchDialog
+    },
+    data() {
+        return {
+            user: "Not logged in"
+        };
     },
     computed: {
-        user() {
-            return Firebase.isUserValid ? Firebase.auth.currentUser.email : "Not logged in";
-        },
         period: {
             get: function() { return this.$store.state.period; },
             set: function(val) { 
@@ -285,5 +285,14 @@ export default {
             this.$refs.chartDialog.show();
         }
     },
+    mounted() {
+        Firebase.auth.onAuthStateChanged((auth) => {
+            if (auth) {
+                this.user = auth.email;
+            } else {
+                this.user = "Not logged in";
+            }
+        });
+    }
 }
 </script>
