@@ -41,7 +41,6 @@ export default {
         },
         onMouseWheel(evt, inc=1) {
             if (this.isValid(this.$refs.input.value)) {
-                console.log(evt);
                 // on Mac, shift wheel moves in X
                 if (evt.shiftKey && (Math.abs(evt.wheelDeltaY) == 0)) {
                     this.$refs.input.value += ` ${evt.wheelDeltaX > 0 ? '+' : '-'} ${inc}`;
