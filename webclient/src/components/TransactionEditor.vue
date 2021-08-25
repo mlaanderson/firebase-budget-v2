@@ -9,25 +9,25 @@
                 <form class="uk-form-stacked" @keypress.enter="save">
 
                     <div class="uk-margin">
-                        <label class="uk-form-label" for="edit-record-dialog-date">Date</label>
+                        <label class="uk-form-label" for="te-dialog-date">Date</label>
                         <div class="uk-form-controls">
-                            <input v-model="date" class="uk-input"  type="date" placeholder="Some text...">
+                            <input v-model="date" class="uk-input" id="te-dialog-date" type="date" placeholder="Some text...">
                         </div>
                     </div>
                 
                     <div class="uk-margin">
-                        <label class="uk-form-label" for="edit-record-dialog-category">Category</label>
+                        <label class="uk-form-label" for="te-dialog-category">Category</label>
                         <div class="uk-form-controls">
-                            <select v-model="category" class="uk-select" >
+                            <select v-model="category" class="uk-select" id="te-dialog-category">
                                 <option v-for="category in config.categories" :key="category">{{ category }}</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="uk-margin">
-                        <label class="uk-form-label" for="edit-record-dialog-name">Name</label>
+                        <label class="uk-form-label" for="te-dialog-name">Name</label>
                         <div class="uk-form-controls">
-                            <input v-model="name" class="uk-input"  type="text" placeholder="Name...">
+                            <input v-model="name" class="uk-input" id="te-dialog-name" type="text" placeholder="Name...">
                         </div>
                     </div>
 
@@ -40,19 +40,18 @@
                     </div>
 
                     <div class="uk-margin">
-                        <label class="uk-form-label" for="edit-record-dialog-check">Check Number</label>
+                        <label class="uk-form-label" for="te-dialog-check">Check Number</label>
                         <div class="uk-form-controls">
-                            <input v-model="check" class="uk-input"  type="text" placeholder="Name...">
+                            <input v-model="check" class="uk-input" id="te-dialog-check" type="text" placeholder="Name...">
                         </div>
                     </div>
 
                     <div class="uk-margin">
-                        <label class="uk-form-label" for="edit-record-dialog-amount">Amount</label>
+                        <label class="uk-form-label" for="te-dialog-amount">Amount<span class="uk-hidden-notouch"> (<label><input type="checkbox" @click="(e) => setInputMode(e.target.checked)">Function Mode)</label></span></label>
                         <div class="uk-form-controls">
-                            <input v-model="amount" class="uk-input"  type="number" placeholder="Amount..." @wheel="() => {/* vue intercepts the wheel event without this */}">
+                            <calculator-input ref="amount" :decimals="2" v-model="amount" id="te-dialog-amount"/>
                         </div>
                     </div>
-                    <!-- <calculator-input ref="amount" :decimals="2" v-model="amount" label="Amount"/> -->
                 
                     <div class="uk-margin">
                         <div class="uk-form-controls">
@@ -62,9 +61,9 @@
                     </div>
 
                     <div class="uk-margin">
-                        <label class="uk-form-lable" for="edit-record-dialog-note">Notes</label>
+                        <label class="uk-form-lable" for="te-dialog-note">Notes</label>
                         <div class="uk-form-controls">
-                            <textarea v-model="note" class="uk-textarea" rows="5"  placeholder="Notes..."></textarea>
+                            <textarea v-model="note" class="uk-textarea" rows="5" id="td-dialog-note" placeholder="Notes..."></textarea>
                         </div>
                     </div>
 
@@ -82,11 +81,11 @@
 <script>
 import UIkit from 'uikit';
 import Firebase from '../data/firebase';
-// import CalculatorInput from "./CalculatorInput.vue";
+import CalculatorInput from "./CalculatorInput.vue";
 
 export default {
     components: {
-        // CalculatorInput
+        CalculatorInput
     },
     data: function () {
         return {
@@ -95,9 +94,13 @@ export default {
         }
     },
     methods: {
+        setInputMode(extended) {
+            this.$refs.amount.changeInputMode(extended);
+        },
         save(e) {
             if (e.target.tagName.toUpperCase() === 'TEXTAREA') return;
             let editor = this;
+            this.$refs.amount.performOutstanding();
             this.transaction.amount = Math.abs(this.transaction.amount) * (this.deposit ? 1 : -1);
             Firebase.saveTransaction(this.transaction).then(
                 function() { 

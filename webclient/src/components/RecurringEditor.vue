@@ -17,39 +17,39 @@
                 <form class="uk-form-stacked" @keypress.enter="save">
 
                     <div class="uk-margin">
-                        <label class="uk-form-label" for="edit-recur-dialog-period">Period</label>
+                        <label class="uk-form-label" for="re-dialog-period">Period</label>
                         <div class="uk-form-controls">
-                            <input v-model="period" class="uk-input"  type="text" placeholder="Name...">
+                            <input v-model="period" class="uk-input" id="re-dialog-period" type="text" placeholder="Name...">
                         </div>
                     </div>
 
                     <div class="uk-margin">
-                        <label class="uk-form-label" for="edit-recur-dialog-start">From</label>
+                        <label class="uk-form-label" for="re-dialog-start">From</label>
                         <div class="uk-form-controls">
-                            <input v-model="start" class="uk-input"  type="date" placeholder="Some text...">
+                            <input v-model="start" class="uk-input" id="re-dialog-start" type="date" placeholder="Some text...">
                         </div>
                     </div>
 
                     <div class="uk-margin">
-                        <label class="uk-form-label" for="edit-recur-dialog-end">Until</label>
+                        <label class="uk-form-label" for="re-dialog-end">Until</label>
                         <div class="uk-form-controls">
-                            <input v-model="end" class="uk-input"  type="date" placeholder="Some text...">
+                            <input v-model="end" class="uk-input" id="re-dialog-end" type="date" placeholder="Some text...">
                         </div>
                     </div>
                 
                     <div class="uk-margin">
-                        <label class="uk-form-label" for="edit-recur-dialog-category">Category</label>
+                        <label class="uk-form-label" for="re-dialog-category">Category</label>
                         <div class="uk-form-controls">
-                            <select v-model="category" class="uk-select" >
+                            <select v-model="category" class="uk-select" id="re-dialog-category">
                                 <option v-for="category in config.categories" :key="category">{{ category }}</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="uk-margin">
-                        <label class="uk-form-label" for="edit-recur-dialog-name">Name</label>
+                        <label class="uk-form-label" for="re-dialog-name">Name</label>
                         <div class="uk-form-controls">
-                            <input v-model="name" class="uk-input"  type="text" placeholder="Name...">
+                            <input v-model="name" class="uk-input" id="re-dialog-name" type="text" placeholder="Name...">
                         </div>
                     </div>
 
@@ -62,13 +62,12 @@
                     </div>
 
                     <div class="uk-margin">
-                        <label class="uk-form-label" for="edit-recur-dialog-amount">Amount</label>
+                        <label class="uk-form-label" for="re-dialog-amount">Amount<span class="uk-hidden-notouch"> (<label><input type="checkbox" @click="(e) => setInputMode(e.target.checked)">Function Mode)</label></span></label>
                         <div class="uk-form-controls">
-                            <input v-model="amount" class="uk-input"  type="number" placeholder="Amount..." @wheel="() => {/* vue intercepts the wheel event without this */}">
+                            <calculator-input ref="amount" :decimals="2" v-model="amount" id="re-dialog-amount"/>
                         </div>
                     </div>
-                    <!-- <calculator-input ref="amount" :decimals="2" v-model="amount" label="Amount"/> -->
-                
+
                     <div class="uk-margin">
                         <div class="uk-form-controls">
                             <label><input v-model="scheduled" class="uk-checkbox" type="checkbox" > Scheduled</label><br>
@@ -76,9 +75,9 @@
                     </div>
 
                     <div class="uk-margin">
-                        <label class="uk-form-lable" for="edit-recur-dialog-note">Notes</label>
+                        <label class="uk-form-label" for="re-dialog-note">Notes</label>
                         <div class="uk-form-controls">
-                            <textarea v-model="note" class="uk-textarea" rows="5"  placeholder="Notes..."></textarea>
+                            <textarea v-model="note" class="uk-textarea" rows="5" id="re-dialog-note" placeholder="Notes..."></textarea>
                         </div>
                     </div>
 
@@ -96,24 +95,11 @@
 <script>
 import UIkit from 'uikit';
 import Firebase from '../data/firebase';
-// import CalculatorInput from "./CalculatorInput.vue";
-
-    // amount : number;
-    // cash? : boolean;
-    // category : string;
-    // end : string;
-    // name : string;
-    // note? : string;
-    // period : string;
-    // start : string;
-    // transfer? : boolean;
-    // active?: string;
-    // delete?: string;
-    // scheduled?: boolean;
+import CalculatorInput from "./CalculatorInput.vue";
 
 export default {
     components: {
-        // CalculatorInput
+        CalculatorInput
     },
     data: function () {
         return {
@@ -122,9 +108,13 @@ export default {
         }
     },
     methods: {
+        setInputMode(extended) {
+            this.$refs.amount.changeInputMode(extended);
+        },
         save(e) {
             if (e.target.tagName.toUpperCase() === 'TEXTAREA') return;
             let editor = this;
+            this.$refs.amount.performOutstanding();
             this.transaction.amount = Math.abs(this.transaction.amount) * (this.deposit ? 1 : -1);
             // set the active date so the server knows to create the transactions
             this.transaction.active = this.$store.state.period.start.toISODate();
