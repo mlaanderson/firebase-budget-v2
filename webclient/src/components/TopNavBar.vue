@@ -32,6 +32,8 @@
                     <li><button class="uk-button-text" @click.prevent="search"><span class="uk-margin-small-right" uk-icon="icon: search"/>Search</button></li>
                     <li><button class="uk-button-text" @click.prevent="showCash"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-money-bill-alt"/>Cash</button></li>
                     
+                    <li><button class="uk-button-text" @click.prevent="transfer"><span class="uk-margin-small-right" uk-icon="icon: forward"/>Transfer</button></li>
+
                     <li class="uk-nav-divider"></li>
                     
                     <li><button class="uk-button-text" :disabled="!canUndo" @click.prevent="undo"><span class="uk-margin-small-right" uk-icon="icon: history"/>Undo</button></li>
@@ -106,6 +108,7 @@ import { DateTime } from 'luxon';
 import { CalculatePeriod } from '../util/date';
 import SearchDialog from './SearchDialog.vue';
 import { Download, Upload } from '../util/file';
+import { Currency } from '../util/formats';
 
 UIkit.use(Icon);
 UIkit.use(UIkitFAAllIcons);
@@ -188,6 +191,11 @@ export default {
         },
         search() {
             this.$refs.searchDialog.show();
+        },
+        transfer(){
+            let sum = this.periodTransactions.filter(tr => tr.transfer && !tr.paid).map(tr => tr.amount).reduce((billy,sam) => billy + sam, 0);
+            UIkit.modal.alert(`Transfer ${Currency.format(Math.abs(sum))} ${sum > 0 ? 'from' : 'to'} savings.`);
+            console.log(sum);
         },
         menu() {
             UIkit.tooltip(this.$refs.btnMenu).hide();
