@@ -50,7 +50,13 @@ export default {
                 this.calculate(this.$refs.input.value);
             }
         },
+        trimFormula(formula) {
+            formula = formula.replace(/^0*/,'');
+            if (formula == '') formula = '0';
+            return formula;
+        },
         isValid: function(formula) {
+            formula = this.trimFormula(formula);
             if (formula.split('').some(s => ALLOWED.indexOf(s) < 0)) {
                 // invalid text
                 return false;
@@ -66,6 +72,7 @@ export default {
             }
         },
         calculate: function(formula) {
+            formula = this.trimFormula(formula);
             if (this.isValid(formula)) {
                 let val = parseFloat(eval(formula).toFixed(this.decimals));
                 this.$emit('input', val);
