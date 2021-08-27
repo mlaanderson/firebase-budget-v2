@@ -1,7 +1,9 @@
 <template>
     <div class="uk-section uk-overflow-auto" uk-grid @touchmove="onTouch" @touchend="onTouchEnd">
         <div class="uk-container uk-width-2-3@m" uk-height-viewport="expand: true" id="viewport">
-            <div>
+            <div>        
+                <a id="listTop" ref="listTop"/>
+
                 <transaction-detail v-for="transaction in periodTransactions" 
                     :key="transaction.key" :transaction="transaction" @info="info" :class="stripeTransactions(transaction)"/>
             </div>
@@ -17,6 +19,7 @@ import TransactionDetail from './TransactionDetail.vue';
 import TransactionInfo from './TransactionInfo.vue';
 import { Currency } from '../util/formats';
 import { CalculatePeriod } from '../util/date';
+import UIkit from 'uikit';
 
 Vue.use(Vuex);
 
@@ -68,7 +71,13 @@ export default {
     },
     computed: {
         ...Vuex.mapGetters(['periodTransactions']),
-        ...Vuex.mapState(['config'])
+        ...Vuex.mapState(['config', 'period'])
     },
+    watch: {
+        period() {
+            console.log('period change');
+            UIkit.scroll(this.$refs.listTop).scrollTo(this.$refs.listTop);
+        }
+    }
 }
 </script>
