@@ -53,6 +53,8 @@
                     
                     <li class="uk-nav-header">Account</li>
                     <li><span ref="username" class="uk-margin-small-right" uk-icon="icon: user"/> {{ user }}</li>
+
+                    <li><button class="uk-button-text" @click.prevent="configuration"><span class="uk-margin-small-right" uk-icon="icon: cog"/> Configuration</button></li>
                     
                     <li><button class="uk-button-text" @click.prevent="logout"><span class="uk-margin-small-right" uk-icon="icon: sign-out"></span> Sign Out</button></li>
                 </ul>
@@ -64,6 +66,7 @@
         <calendar-dialog ref="calDialog" v-model="period" :startDate="config.startDate" :periodLength="config.periodLength"/>
         <cash-dialog ref="cashDialog"/>
         <search-dialog ref="searchDialog"/>
+        <config ref="configDialog"/>
 
         <!-- special -->
         <keyboard-event 
@@ -109,6 +112,7 @@ import { CalculatePeriod } from '../util/date';
 import SearchDialog from './SearchDialog.vue';
 import { Download, Upload } from '../util/file';
 import { Currency } from '../util/formats';
+import Config from './Config.vue';
 
 UIkit.use(Icon);
 UIkit.use(UIkitFAAllIcons);
@@ -119,7 +123,8 @@ window.Upload = Upload;
 export default {
     components: {
         CalendarDialog, CashDialog, KeyboardEvent,
-        SearchDialog
+        SearchDialog,
+        Config
     },
     data() {
         return {
@@ -153,6 +158,9 @@ export default {
         redo() {
             Firebase.redo();
             UIkit.offcanvas(this.$refs.menuNav).hide();
+        },
+        configuration(){
+            this.$refs.configDialog.show();
         },
         showCash() {
             UIkit.offcanvas(this.$refs.menuNav).hide();

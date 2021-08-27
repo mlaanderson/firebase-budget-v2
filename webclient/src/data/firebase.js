@@ -350,6 +350,14 @@ class Firebase {
         this._saveHistory();
     }
 
+    async saveConfig(data) {
+        if (this.isUserValid) {
+                await this.db.ref(`${this.uid}/config`).set(data);
+
+        }
+    }
+
+
     async restoreBudget(data) {
         if (this.isUserValid) {
             try {

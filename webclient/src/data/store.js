@@ -23,6 +23,14 @@ const store = new Vuex.Store({
             categories: ["Income"],
             theme: "default"
         },
+        configuration: {
+            categories: [], 
+            periods: {
+                length: "",
+                start: "2016-06-17"
+            },
+            theme: "default"
+        },
         canUndo: false,
         canRedo: false
     },
@@ -30,6 +38,7 @@ const store = new Vuex.Store({
         setValue: (state, val) => state.value = val,
         set: (state, val) => state[val.key] = val.value,
         setConfig: (state, val) => state.config[val.key] = val.value,
+        setConfiguration: (state, val) => state.configuration[val.key] = val.value,
         
     },
     getters: {
@@ -135,6 +144,11 @@ function onConfig(snap) {
     store.commit('setConfig', { key: 'categories', value: config.categories });
     store.commit('setConfig', { key: 'periodLength', value: periodLength });
     store.commit('setConfig', { key: 'startDate', value: startDate });
+    store.commit('setConfiguration', {key: 'categories', value: config.categories});
+    store.commit("setConfiguration", {key: 'periods', value: {
+        length: config.periods.length,
+        start: config.periods.start,
+    }});
     store.commit('set', { key: 'period', value: CalculatePeriod(DateTime.today(), startDate, periodLength) });
 }
 
