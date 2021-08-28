@@ -80,7 +80,6 @@
 
 <script>
 import UIkit from 'uikit';
-import Firebase from '../data/firebase';
 import CalculatorInput from "./CalculatorInput.vue";
 
 export default {
@@ -97,22 +96,18 @@ export default {
         setInputMode(extended) {
             this.$refs.amount.changeInputMode(extended);
         },
-        save(e) {
+        async save(e) {
             if (e.target === this.$refs.amount.$el) return;
             if (e.target.tagName.toUpperCase() === 'TEXTAREA') return;
-            let editor = this;
             this.$refs.amount.performOutstanding();
             this.transaction.amount = Math.abs(this.transaction.amount) * (this.deposit ? 1 : -1);
-            Firebase.saveTransaction(this.transaction).then(
-                function() { 
-                    UIkit.modal(editor.$el).hide(); 
-                    editor.transaction = null;
-                }
-            ).catch(
-                function(reason) {
-                    console.log('ERROR:', reason);
-                }
-            )
+            try {
+                await this.$store.saveTransaction(this.transaction);
+                UIkit.modal(this.$el).hide(); 
+                this.transaction = null;
+            } catch (reason) {
+                console.log('ERROR:', reason);
+            }
         },
         newTransaction() {
             this.transaction = null; // empty

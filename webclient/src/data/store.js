@@ -3,6 +3,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { DateTime, Duration } from 'luxon';
 import { CalculatePeriod } from '../util/date';
+import { Download } from '../util/file';
 
 Vue.use(Vuex);
 
@@ -13,7 +14,8 @@ const store = new Vuex.Store({
      * Populate state with some default values to avoid errors
      */
     state: {
-        value: 0,
+        auth: null,
+        username: 'Not logged in',
         transactions: [],
         recurring: [],
         period: { start: DateTime.fromISO('2021-08-13').startOf('day'), end: DateTime.fromISO('2021-08-26').startOf('day') },
@@ -134,6 +136,64 @@ store.findText = function(text) {
     return [];
 }
 
+store.saveConfig =  async function(config) {
+    if (Firebase.isUserValid) {
+        await Firebase.saveConfig(config);
+    }
+}
+
+store.deleteRecurring =  async function(transaction) {
+    transaction.delete = this.state.period.start.toISODate();
+    try {
+        await Firebase.saveRecurring(transaction);
+    } catch {
+        // nothing can be done
+    }
+}
+
+store.saveRecurring = async function(transaction) {
+    try {
+        // set the active date so the server knows to create the transactions
+        transaction.active = this.state.period.start.toISODate();
+        await Firebase.saveRecurring(transaction);
+    } catch(error) {
+        console.log('ERROR:', error);
+    }
+}
+
+store.deleteTransaction = async function(transaction) {
+    await Firebase.deleteTransaction(transaction);
+}
+
+store.saveTransaction = async function(transaction) {
+    await Firebase.saveTransaction(transaction);
+}
+
+store.undo = function() {
+    Firebase.undo();
+}
+
+store.redo = function() {
+    Firebase.redo();
+}
+
+store.logout = function() {
+    Firebase.auth.signOut();
+}
+
+store.backup = async function() {
+    let snapshot = await Firebase.db.ref(Firebase.uid).get();
+    let data = snapshot.val();
+    let stringData = JSON.stringify(data);
+    let filename = `budget-${this.state.period.start.toISODate()}.json`;
+
+    Download(stringData, filename, 'application/json');
+}
+
+store.restore = async function(data) {
+    await Firebase.db.ref(`${Firebase.uid}/accounts/budget`).set(data)
+}
+
 /**
  * Loads configuration changes into the store when changed
  * @param {DataSnapshot} snap Firebase snapshot
@@ -142,15 +202,19 @@ function onConfig(snap) {
     let config = snap.val();
     let periodLength = Duration.fromNatural(config.periods.length).as('days');
     let startDate = DateTime.fromISO(config.periods.start).startOf('day');
-    store.commit('setConfig', { key: 'categories', value: config.categories });
-    store.commit('setConfig', { key: 'periodLength', value: periodLength });
-    store.commit('setConfig', { key: 'startDate', value: startDate });
-    store.commit('setConfig', { key: 'theme', value: config.theme });
-    store.commit('setConfiguration', {key: 'categories', value: config.categories});
-    store.commit('setConfiguration', {key: 'theme', value: config.theme});
-    store.commit("setConfiguration", {key: 'periods', value: {
-        length: config.periods.length,
-        start: config.periods.start,
+    store.commit('set', { key: 'config', value: {
+        categories: config.categories,
+        periodLength: periodLength,
+        startDate: startDate,
+        theme: config.theme
+    }});
+    store.commit('set', {key: 'configuration', value: {
+        categories: config.categories,
+        periods: {
+            length: config.periods.length,
+            start: config.periods.start
+        },
+        theme: config.theme
     }});
     store.commit('set', { key: 'period', value: CalculatePeriod(DateTime.today(), startDate, periodLength) });
     store.commit('set', { key: 'theme', value: config.theme });
@@ -224,11 +288,14 @@ Firebase.auth.onAuthStateChanged((auth) => {
         Firebase.db.ref(`${Firebase.uid}/config`).on('value', onConfig);
         Firebase.db.ref(`${Firebase.uid}/accounts/budget/transactions`).on('value', onTransaction);
         Firebase.db.ref(`${Firebase.uid}/accounts/budget/recurring`).on('value', onRecurring);
+        store.commit('set', { key: 'username', value: auth.email });
     } else {
         // empty the state
         store.commit('setConfig', { key: 'categories', value: ['Income'] });
         store.commit('set', { key: 'transactions', value: [] });
+        store.commit('set', { key: 'username', value: "Not logged in" });
     }
+    store.commit('set', { key: 'auth', auth });
 });
 
 // configure the store for firebase undo/redo

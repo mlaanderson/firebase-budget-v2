@@ -35,7 +35,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import UIkit from 'uikit';
-import Firebase from '../data/firebase';
 import { Currency, ShortDate } from '../util/formats';
 
 Vue.use(Vuex);
@@ -61,7 +60,7 @@ export default {
         async deleteTransaction() {
             try {
                 await UIkit.modal.confirm(`Delete ${this.transaction.name} in ${this.transaction.category}?`)
-                await Firebase.deleteTransaction(this.transaction);
+                await this.$store.deleteTransaction(this.transaction);
             } catch {
                 // nothing to do 
             }

@@ -17,7 +17,6 @@ import Vuex from 'vuex';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_amchartsdark from "@amcharts/amcharts4/themes/amchartsdark";
-import Firebase from '../data/firebase';
 import { DateTime } from 'luxon';
 import { Currency } from '../util/formats';
 
@@ -28,7 +27,7 @@ am4core.useTheme(am4themes_amchartsdark);
 export default {
     computed: {
         ...Vuex.mapGetters(['dailyBalances']),
-        ...Vuex.mapState(['period']),
+        ...Vuex.mapState(['period', 'auth']),
         data: {
             get() {
                 if (this.chart) {
@@ -65,6 +64,14 @@ export default {
         },
         period(period) {
             this.zoom(period);
+        },
+        auth(auth) {
+            if (auth) {
+                this.data = this.dailyBalances;
+                this.chart.events.once('datavalidated', () => this.zoom(this.period));
+            } else {
+                this.data = [];
+            }
         }
     },
     mounted() {
@@ -100,15 +107,6 @@ export default {
 
         this.chart = chart;
         this.dateAxis = dateAxis;
-
-        Firebase.auth.onAuthStateChanged((auth) => {
-            if (auth) {
-                this.data = this.dailyBalances;
-                this.chart.events.once('datavalidated', () => this.zoom(this.period));
-            } else {
-                this.data = [];
-            }
-        });
     },
     beforeDestroy() {
         if (this.chart) {

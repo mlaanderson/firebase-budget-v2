@@ -94,7 +94,6 @@
 
 <script>
 import UIkit from 'uikit';
-import Firebase from '../data/firebase';
 import CalculatorInput from "./CalculatorInput.vue";
 
 export default {
@@ -111,34 +110,22 @@ export default {
         setInputMode(extended) {
             this.$refs.amount.changeInputMode(extended);
         },
-        save(e) {
+        async save(e) {
             if (e.target === this.$refs.amount.$el) return;
             if (e.target.tagName.toUpperCase() === 'TEXTAREA') return;
-            let editor = this;
             this.$refs.amount.performOutstanding();
             this.transaction.amount = Math.abs(this.transaction.amount) * (this.deposit ? 1 : -1);
-            // set the active date so the server knows to create the transactions
-            this.transaction.active = this.$store.state.period.start.toISODate();
 
-            Firebase.saveRecurring(this.transaction).then(
-                function() { 
-                    UIkit.modal(editor.$el).hide(); 
-                    editor.transaction = null;
-                }
-            ).catch(
-                function(reason) {
-                    console.log('ERROR:', reason);
-                }
-            )
+            await this.$store.saveRecurring(this.transaction);
+            UIkit.modal(this.$el).hide(); 
+            this.transaction = null;
         },
         async deleteTransaction() {
             try {
                 await UIkit.modal.confirm(`Delete recurring ${this.transaction.name} in ${this.transaction.category}?`);
-                // set the delete date so the server knows to delete the transactions
-                this.transaction.delete = this.$store.state.period.start.toISODate();
-                await Firebase.saveRecurring(this.transaction);
+                await this.$store.deleteRecurring(this.transaction);
             } catch {
-                // nothing to do 
+                // this catches if the user selects cancel 
             }
         },
         newTransaction() {

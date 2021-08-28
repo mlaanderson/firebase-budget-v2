@@ -47,7 +47,6 @@
 <script>
 
 import UIkit from 'uikit';
-import Firebase from '../data/firebase';
 import Vue from 'vue';
 import Vuex from 'vuex';
 
@@ -59,7 +58,7 @@ export default {
     },
     methods:{
         save(){
-            Firebase.saveConfig(this.configuration);
+            this.$store.saveConfig(this.configuration);
             UIkit.modal(this.$el).hide();
         },
         show(){

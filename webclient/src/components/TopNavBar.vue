@@ -52,7 +52,7 @@
                     <li class="uk-nav-divider"></li>
                     
                     <li class="uk-nav-header">Account</li>
-                    <li><span ref="username" class="uk-margin-small-right" uk-icon="icon: user"/> {{ user }}</li>
+                    <li><span ref="username" class="uk-margin-small-right" uk-icon="icon: user"/> {{ username }}</li>
 
                     <li><button class="uk-button-text" @click.prevent="configuration"><span class="uk-margin-small-right" uk-icon="icon: cog"/> Configuration</button></li>
                     
@@ -100,7 +100,6 @@
 <script>
 import Vue from 'vue';
 import Vuex from 'vuex';
-import Firebase from '../data/firebase';
 import CalendarDialog from './CalendarDialog.vue';
 import CashDialog from './CashDialog.vue';
 import KeyboardEvent from './KeyboardEvent.vue';
@@ -126,11 +125,6 @@ export default {
         SearchDialog,
         Config
     },
-    data() {
-        return {
-            user: "Not logged in"
-        };
-    },
     computed: {
         period: {
             get: function() { return this.$store.state.period; },
@@ -144,7 +138,7 @@ export default {
         canRedo() {
             return this.$store.state.canRedo;
         },
-        ...Vuex.mapState(['config', 'transactions']),
+        ...Vuex.mapState(['config', 'transactions', 'username']),
         ...Vuex.mapGetters(['periodTransactions'])
     },
     methods: {
@@ -152,11 +146,11 @@ export default {
             console.log(`Inactive${str !== '' ? ': ' + str : ''}`);
         },
         undo() {
-            Firebase.undo();
+            this.$store.undo();
             UIkit.offcanvas(this.$refs.menuNav).hide();
         },        
         redo() {
-            Firebase.redo();
+            this.$store.redo();
             UIkit.offcanvas(this.$refs.menuNav).hide();
         },
         configuration(){
@@ -232,19 +226,16 @@ export default {
             this.$root.$children[0].$refs.recurringEditor.newTransaction();
         },
         logout() {
-            Firebase.auth.signOut();
+            this.$store.logout();
         },
         async backup() {
             try {
-                let snapshot = await Firebase.db.ref(Firebase.uid).get();
-                let data = snapshot.val();
-                let stringData = JSON.stringify(data);
-                let filename = `budget-${this.period.start.toISODate()}.json`;
-
-                Download(stringData, filename, 'application/json');
-            } catch {
+                await this.$store.backup();
+            } catch (err) {
+                console.log('ERROR:', err);
                 UIkit.notification('ERROR: Unable to download backup', 'danger');
             }
+
             UIkit.offcanvas(this.$refs.menuNav).hide();
         },
         async restore() {
@@ -254,9 +245,7 @@ export default {
                 if ('accounts' in data && 'budget' in data.accounts) {
                     // this appears to be budget data
                     UIkit.modal.confirm('Overwrite your budget? Existing entries will be lost.').then(
-                        function() {
-                            // OK pressed
-                        },
+                        this.$store.restore(data.accounts.budget),
                         function() {
                             // cancel pressed
                         }
@@ -300,15 +289,6 @@ export default {
         chartSpending() {
             this.$refs.chartDialog.show();
         }
-    },
-    mounted() {
-        Firebase.auth.onAuthStateChanged((auth) => {
-            if (auth) {
-                this.user = auth.email;
-            } else {
-                this.user = "Not logged in";
-            }
-        });
     }
 }
 </script>
