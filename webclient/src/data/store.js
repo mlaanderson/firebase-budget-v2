@@ -298,7 +298,10 @@ Firebase.auth.onAuthStateChanged((auth) => {
     store.commit('set', { key: 'auth', auth });
 });
 
-// configure the store for firebase undo/redo
-Firebase.store = store;
+// Configure the handler for history
+Firebase.on('history', (canUndo, canRedo) => {
+    store.commit('set', { key: 'canUndo', value: canUndo });
+    store.commit('set', { key: 'canRedo', value: canRedo });
+});
 
 export default store;

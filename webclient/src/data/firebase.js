@@ -1,6 +1,7 @@
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
+import EventEmitter from '../util/eventemitter';
 
 /**
  * @typedef {{
@@ -57,8 +58,9 @@ firebase.default.initializeApp(firebaseConfig);
 const DB = firebase.default.database();
 const AUTH = firebase.default.auth();
 
-class Firebase {
+class Firebase extends EventEmitter {
     constructor() {
+        super();
         /** @type {History} */
         this._history = {};
         this._pointer = -1;
@@ -82,34 +84,18 @@ class Firebase {
                     }
                 }
                 this._pointer = this._history[this.uid].items.length;
-                this.store.commit('set', { key: 'canUndo', value: this.canUndo() });
-                this.store.commit('set', { key: 'canRedo', value: this.canRedo() });    
+                this.emit('history', this.canUndo(), this.canRedo());
             } else {
                 this._pointer = -1;
             }
-        })
+        });
     }
 
     _saveHistory() {
         if (window.localStorage) {
             localStorage.setItem('budget2.history', JSON.stringify(this._history));
         }
-        if (this.store) {
-            this.store.commit('set', { key: 'canUndo', value: this.canUndo() });
-            this.store.commit('set', { key: 'canRedo', value: this.canRedo() });
-        }
-    }
-
-    get store() {
-        return this._store;
-    }
-
-    set store(value) {
-        if (typeof value.commit === 'function') {
-            this._store = value;
-            this.store.commit('set', { key: 'canUndo', value: this.canUndo() });
-            this.store.commit('set', { key: 'canRedo', value: this.canRedo() });
-        }
+        this.emit('history', this.canUndo(), this.canRedo());
     }
 
     /** @type {UserHistory} */
