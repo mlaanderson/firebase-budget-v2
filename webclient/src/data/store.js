@@ -152,20 +152,64 @@ function onConfig(snap) {
     store.commit('set', { key: 'period', value: CalculatePeriod(DateTime.today(), startDate, periodLength) });
 }
 
+/**
+amount : number;
+cash? : boolean;
+category : string;
+check? : string;
+date : string;
+name : string;
+note? : string;
+paid?: boolean;
+scheduled?: boolean;
+recurring? : string;
+transfer? : boolean;
+*/
 function onTransaction(snap) {
     let transactions = snap.val();
     let result = [];
     for (let key in transactions) {
-        result.push({ _key: key, ...transactions[key] });
+        result.push({ 
+            _key: key, 
+            cash: false,
+            check: "",
+            note: "",
+            paid: false,
+            scheduled: false,
+            recurring: "",
+            transfer: false,
+            ...transactions[key] 
+        });
     }
     store.commit('set', { key: 'transactions', value: result });
 }
 
+/*
+    amount : number;
+    cash? : boolean;
+    category : string;
+    end : string;
+    name : string;
+    note? : string;
+    period : string;
+    start : string;
+    transfer? : boolean;
+    active?: string;
+    delete?: string;
+    scheduled?: boolean;
+*/
 function onRecurring(snap) {
     let recurrings = snap.val();
     let result = [];
     for (let key in recurrings) {
-        result.push({ _key: key, ...recurrings[key] });
+        result.push({ 
+            _key: key, 
+            cash: false,
+            note: "",
+            transfer: false,
+            scheduled: false,
+            ...recurrings[key] 
+        });
     }
     store.commit('set', { key: 'recurring', value: result });
 }
