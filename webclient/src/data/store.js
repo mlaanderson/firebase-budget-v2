@@ -17,6 +17,7 @@ const store = new Vuex.Store({
         transactions: [],
         recurring: [],
         period: { start: DateTime.fromISO('2021-08-13').startOf('day'), end: DateTime.fromISO('2021-08-26').startOf('day') },
+        theme: 'default',
         config: {
             periodLength: 7,
             startDate: DateTime.fromISO('2016-06-17').startOf('day'),
@@ -144,12 +145,15 @@ function onConfig(snap) {
     store.commit('setConfig', { key: 'categories', value: config.categories });
     store.commit('setConfig', { key: 'periodLength', value: periodLength });
     store.commit('setConfig', { key: 'startDate', value: startDate });
+    store.commit('setConfig', { key: 'theme', value: config.theme });
     store.commit('setConfiguration', {key: 'categories', value: config.categories});
+    store.commit('setConfiguration', {key: 'theme', value: config.theme});
     store.commit("setConfiguration", {key: 'periods', value: {
         length: config.periods.length,
         start: config.periods.start,
     }});
     store.commit('set', { key: 'period', value: CalculatePeriod(DateTime.today(), startDate, periodLength) });
+    store.commit('set', { key: 'theme', value: config.theme });
 }
 
 /**

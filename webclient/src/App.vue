@@ -22,6 +22,7 @@ import TransactionEditor from './components/TransactionEditor.vue';
 import RecurringEditor from './components/RecurringEditor.vue';
 import AppFooter from './components/AppFooter.vue';
 import TransactionList from './components/TransactionList.vue';
+import './assets/css/uikit.default-theme.min.css';
 
 Vue.use(Vuex);
 
@@ -42,6 +43,9 @@ export default {
         LoginDialog, TopNavBar, AppFooter, TransactionList, TransactionEditor, RecurringEditor
     },
     store,
+    computed: {
+        ...Vuex.mapState(['theme'])
+    },
     beforeCreate() {
         document.title = 'Anderson Budget';
     },
@@ -70,10 +74,12 @@ export default {
 
         // manually adjust the viewport height on-load
         adjustViewport();
+    },
+    watch: {
+        theme(value) {
+            console.log('theme changed:', value);
+            import(`./assets/css/uikit.${value}-theme.min.css`);
+        }
     }
 }
 </script>
-
-<style>
-    @import url(https://cdn.jsdelivr.net/npm/uikit@3.7.2/dist/css/uikit.min.css);
-</style>
