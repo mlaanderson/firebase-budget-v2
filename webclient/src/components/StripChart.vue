@@ -115,7 +115,7 @@ export default {
         chart.scrollbarX.parent = chart.bottomAxesContainer;
         chart.zoomOutButton.disabled = true;
 
-        window.chart = this.chart = chart;
+        this.chart = chart;
         this.dateAxis = dateAxis;
 
         if (this.auth) {
