@@ -9,8 +9,8 @@
                 <table class="uk-table uk-table-small">
                     <thead><th>Category</th><th>Spending</th><th>Pct.</th></thead>
                     <tbody>
-                        <tr v-for="cat in categories" :key="cat" :style="`background: linear-gradient(to right, #D0D0D0 ${(100 * spending[cat] / total).toFixed(0)}%, rgba(0,0,0,0) ${(100 * spending[cat] / total).toFixed(0)}%);`">
-                            <td>{{ cat }}</td>
+                        <tr v-for="cat in categories" :key="cat">
+                            <td :style="`background: linear-gradient(to right, #D0D0D0 ${(100 * spending[cat] / total).toFixed(0)}%, rgba(0,0,0,0) ${(100 * spending[cat] / total).toFixed(0)}%);`">{{ cat }}</td>
                             <td>{{ currency(spending[cat]) }}</td>
                             <td>{{ (100 * spending[cat] / total).toFixed(0) }}%</td>
                         </tr>
