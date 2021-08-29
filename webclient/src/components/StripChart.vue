@@ -37,15 +37,26 @@ export default {
             },
             set(values) {
                 if (this.chart) {
-                    this.chart.data = [...values.map(d => { 
-                        return { 
-                            date: DateTime.fromISO(d.date).toJSDate(), 
-                            amount: d.amount,
-                            dateString: DateTime.fromISO(d.date).toLocaleString({ month: 'short', day: 'numeric', year: 'numeric' }),
-                            valueString: Currency.format(d.amount)
-                        } 
-                    })]
-                    .sort((a,b) => a.date.getTime() - b.date.getTime() );
+                    if (!this.chart.data) {
+                        this.chart.data = [];
+                    }
+                    for (let dp of values) {
+                        let date = DateTime.fromISO(dp.date).toJSDate()
+                        let datapoint = this.chart.data.filter(cd => cd.date.getTime() === date.getTime());
+                        if (datapoint.length === 1) {
+                            datapoint[0].amount = dp.amount;
+                            datapoint[0].valueString = Currency.format(dp.amount);
+                        } else {
+                            let prevVals = this.chart.data.filter(cd => cd.date.getTime() < date.getTime());
+                            this.chart.data.splice(prevVals.length, 0, {
+                                date: DateTime.fromISO(dp.date).toJSDate(), 
+                                amount: dp.amount,
+                                dateString: DateTime.fromISO(dp.date).toLocaleString({ month: 'short', day: 'numeric', year: 'numeric' }),
+                                valueString: Currency.format(dp.amount)
+                            });
+                        }
+                    }
+                    this.chart.invalidateData();
                 }
             }
         }
@@ -90,7 +101,6 @@ export default {
         series.dataFields.valueY = 'amount';
         series.dataFields.dateX = 'date';
         series.tooltipText = "{dateString}\n{valueString}";
-        
 
         chart.cursor = new am4charts.XYCursor();
         chart.cursor.xAxis = dateAxis;
@@ -105,8 +115,13 @@ export default {
         chart.scrollbarX.parent = chart.bottomAxesContainer;
         chart.zoomOutButton.disabled = true;
 
-        this.chart = chart;
+        window.chart = this.chart = chart;
         this.dateAxis = dateAxis;
+
+        if (this.auth) {
+            this.data = this.dailyBalances;
+            this.chart.events.once('datavalidated', () => this.zoom(this.period));
+        }
     },
     beforeDestroy() {
         if (this.chart) {
