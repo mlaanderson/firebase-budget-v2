@@ -40,8 +40,6 @@
 import UIkit from 'uikit';
 import Firebase from '../data/firebase';
 
-window.UIkit = UIkit;
-
 export default {
     methods: {
         async doLogin() {

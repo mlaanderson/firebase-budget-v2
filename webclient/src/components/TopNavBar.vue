@@ -117,8 +117,6 @@ UIkit.use(Icon);
 UIkit.use(UIkitFAAllIcons);
 Vue.use(Vuex);
 
-window.Upload = Upload;
-
 export default {
     components: {
         CalendarDialog, CashDialog, KeyboardEvent,

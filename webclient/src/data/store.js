@@ -7,8 +7,6 @@ import { Download } from '../util/file';
 
 Vue.use(Vuex);
 
-window.Firebase = Firebase;
-
 const store = new Vuex.Store({
     /**
      * Populate state with some default values to avoid errors

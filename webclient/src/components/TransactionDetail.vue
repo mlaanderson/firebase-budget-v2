@@ -46,14 +46,12 @@ export default {
         date(value) { return ShortDate.format(value); },
         editTransaction() { 
             this.$root.$children[0].$refs.transactionEditor.transaction = JSON.parse(JSON.stringify(this.transaction));
-            window.editor = this.$root.$children[0].$refs.transactionEditor;
             UIkit.modal(this.$root.$children[0].$refs.transactionEditor.$el).show();
         },
         editRecurring() {
             if (this.transaction.recurring) {
                 let transaction = this.recurring.filter(tr => tr._key === this.transaction.recurring)[0];
                 this.$root.$children[0].$refs.recurringEditor.transaction = JSON.parse(JSON.stringify(transaction));
-                window.editor = this.$root.$children[0].$refs.recurringEditor;
                 UIkit.modal(this.$root.$children[0].$refs.recurringEditor.$el).show();
             }
         },
