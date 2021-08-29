@@ -75,7 +75,6 @@ export default {
     },
     watch: {
         period() {
-            console.log('period change');
             UIkit.scroll(this.$refs.listTop).scrollTo(this.$refs.listTop);
         }
     }

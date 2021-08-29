@@ -197,7 +197,6 @@ export default {
         transfer(){
             let sum = this.periodTransactions.filter(tr => tr.transfer && !tr.paid).map(tr => tr.amount).reduce((billy,sam) => billy + sam, 0);
             UIkit.modal.alert(`Transfer ${Currency.format(Math.abs(sum))} ${sum > 0 ? 'from' : 'to'} savings.`);
-            console.log(sum);
         },
         menu() {
             UIkit.tooltip(this.$refs.btnMenu).hide();
