@@ -39,9 +39,9 @@
                     <li><button class="uk-button-text" :disabled="!canUndo" @click.prevent="undo"><span class="uk-margin-small-right" uk-icon="icon: history"/>Undo</button></li>
                     <li><button class="uk-button-text" :disabled="!canRedo" @click.prevent="redo"><span class="uk-margin-small-right" uk-icon="icon: future"/>Redo</button></li>
                     
-                    <!-- <li class="uk-nav-header">Charts</li>
-                    <li><button class="uk-button-text" @click.prevent="chartSpending"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Period Spending</button></li>
-                    <li><button class="uk-button-text" @click.prevent="inactive('chart-year-spending')"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Year to Date Spending</button></li>                    -->
+                    <li class="uk-nav-header">Charts</li>
+                    <li><button class="uk-button-text" @click.prevent="periodSpending"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Period Spending</button></li>
+                    <li><button class="uk-button-text" @click.prevent="yearSpending"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-chart-bar"/> Year to Date Spending</button></li>                   
 
                     <li class="uk-nav-header">Exports</li>
                     <li><button class="uk-button-text" @click.prevent="backup"><span class="uk-margin-small-right" uk-icon="icon: download"/> Download Backup</button></li>
@@ -67,6 +67,7 @@
         <cash-dialog ref="cashDialog"/>
         <search-dialog ref="searchDialog"/>
         <config ref="configDialog"/>
+        <chart-dialog ref="chartDialog"/>
 
         <!-- special -->
         <keyboard-event 
@@ -112,6 +113,7 @@ import SearchDialog from './SearchDialog.vue';
 import { Download, Upload } from '../util/file';
 import { Currency } from '../util/formats';
 import Config from './Config.vue';
+import ChartDialog from './ChartDialog.vue';
 
 UIkit.use(Icon);
 UIkit.use(UIkitFAAllIcons);
@@ -121,7 +123,8 @@ export default {
     components: {
         CalendarDialog, CashDialog, KeyboardEvent,
         SearchDialog,
-        Config
+        Config,
+        ChartDialog
     },
     computed: {
         period: {
@@ -283,8 +286,14 @@ export default {
             }
             UIkit.offcanvas(this.$refs.menuNav).hide();
         },
-        chartSpending() {
-            this.$refs.chartDialog.show();
+        periodSpending() {
+            this.$refs.chartDialog.show('Period Spending', this.periodTransactions);
+        },
+        yearSpending() {
+            let startDate = this.period.start.minus({ years: 1 }).toISODate();
+            let endDate = this.period.end.toISODate()
+            let filtered = this.transactions.filter(tr => startDate <= tr.date && tr.date <= endDate);
+            this.$refs.chartDialog.show('Year Spending', filtered);
         }
     }
 }

@@ -5,5 +5,9 @@
     "uikit": "^3.7.2",
     "vuex": "^3.6.2",
     "weekstart": "^1.1.0"
+  },
+  "scripts": {
+    "serve": "cd webclient; npm run serve",
+    "build": "cd webclient; npm run build"
   }
 }
