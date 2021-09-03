@@ -33,6 +33,7 @@
                     <li><button class="uk-button-text" @click.prevent="showCash"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-money-bill-alt"/>Cash</button></li>
                     
                     <li><button class="uk-button-text" @click.prevent="transfer"><span class="uk-margin-small-right" uk-icon="icon: forward"/>Transfer</button></li>
+                    <li class="uk-visible@m"><button class="uk-button-text" @click.prevent="reconcile"><span class="uk-margin-small-right" uk-icon="icon: database"/>Reconcile</button></li>
 
                     <li class="uk-nav-divider"></li>
                     
@@ -68,6 +69,7 @@
         <search-dialog ref="searchDialog"/>
         <config ref="configDialog"/>
         <chart-dialog ref="chartDialog"/>
+        <reconcile-dialog ref="reconcileDialog"/>
 
         <!-- special -->
         <keyboard-event 
@@ -114,6 +116,7 @@ import { Download, Upload } from '../util/file';
 import { Currency } from '../util/formats';
 import Config from './Config.vue';
 import ChartDialog from './ChartDialog.vue';
+import ReconcileDialog from './ReconcileDialog.vue';
 
 UIkit.use(Icon);
 UIkit.use(UIkitFAAllIcons);
@@ -124,7 +127,8 @@ export default {
         CalendarDialog, CashDialog, KeyboardEvent,
         SearchDialog,
         Config,
-        ChartDialog
+        ChartDialog,
+        ReconcileDialog
     },
     computed: {
         period: {
@@ -294,6 +298,9 @@ export default {
             let endDate = this.period.end.toISODate()
             let filtered = this.transactions.filter(tr => startDate <= tr.date && tr.date <= endDate);
             this.$refs.chartDialog.show('Year Spending', filtered);
+        },
+        reconcile() {
+            this.$refs.reconcileDialog.show();
         }
     }
 }
