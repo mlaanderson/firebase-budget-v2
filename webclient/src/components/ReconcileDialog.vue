@@ -22,8 +22,8 @@
                                 <h4>Matches</h4>
                                 <div v-for="tr in autoReconciled" :key="tr.budget._key" class="uk-card uk-card-default uk-card-body">
                                     {{tr.budget.category}}: {{tr.budget.name}} {{currency(tr.budget.amount)}}
-                                    <div uk-sortable="group: sortable-group" :ref="tr.budget._key" :id="tr.budget._key" onadded="console.log('added')">
-                                        <div class="uk-card uk-card-primary uk-card-body uk-card-small" :id="tr.bank.id">
+                                    <div uk-sortable="group: sortable-group" :ref="tr.budget._key" :id="tr.budget._key" class="uk-dragover">
+                                        <div class="uk-card uk-card-primary uk-card-body uk-card-small uk-drag" :id="tr.bank.id">
                                             {{shortDate(tr.bank.posted)}} {{tr.bank.name}} {{currency(tr.bank.amount)}}
                                         </div>
                                     </div>
@@ -33,8 +33,8 @@
                                 <h4>Close Matches</h4>
                                 <div v-for="tr in closeMatches" :key="tr.budget._key" class="uk-card uk-card-default uk-card-body">
                                     {{tr.budget.category}}: {{tr.budget.name}} {{currency(tr.budget.amount)}}
-                                    <div uk-sortable="group: sortable-group" :ref="tr.budget._key" :id="tr.budget._key">
-                                        <div class="uk-card uk-card-primary uk-card-body uk-card-small" :id="tr.bank.id">
+                                    <div uk-sortable="group: sortable-group" :ref="tr.budget._key" :id="tr.budget._key" class="uk-dragover">
+                                        <div class="uk-card uk-card-primary uk-card-body uk-card-small uk-drag" :id="tr.bank.id">
                                             {{shortDate(tr.bank.posted)}} {{tr.bank.name}} {{currency(tr.bank.amount)}}
                                         </div>
                                     </div>
@@ -44,13 +44,13 @@
                                 <h4>Unreconciled</h4>
                                 <div v-for="tr in budgetUnreconciled" :key="tr._key" class="uk-card uk-card-default uk-card-body">
                                     {{tr.category}}: {{tr.name}} {{currency(tr.amount)}}
-                                    <div uk-sortable="group: sortable-group" :ref="tr._key" :id="tr._key"> </div>
+                                    <div uk-sortable="group: sortable-group" :ref="tr._key" :id="tr._key" class="uk-dragover"> </div>
                                 </div>
                             </div>
                             <div>
                                 <h4>New</h4>
                                 <div class="uk-card uk-card-default uk-card-body">
-                                    <div uk-sortable="group: sortable-group" ref="added"> </div>
+                                    <div uk-sortable="group: sortable-group" class="uk-dragover" ref="added"> </div>
                                 </div>
                             </div>
                         </div>
@@ -58,9 +58,9 @@
                     <div class="uk-width-1-2" uk-overflow-auto>
                         <a id="bankTop" ref="bankTop"/>
                         <h4>Bank Transactions</h4>
-                        <div uk-sortable="group: sortable-group" style="height: 100%;" ref="bank">
+                        <div uk-sortable="group: sortable-group" style="height: 100%;" ref="bank" class="uk-dragover">
                             <div class="uk-margin" v-for="tr in bankUnreconciled" :key="tr.id" :id="tr.id">
-                                <div class="uk-card uk-card-primary uk-card-body uk-card-small">
+                                <div class="uk-card uk-card-primary uk-card-body uk-card-small uk-drag">
                                     {{shortDate(tr.posted)}} {{tr.name}} {{currency(tr.amount)}}
                                 </div>
                             </div>
@@ -103,23 +103,35 @@ export default {
             bankUnreconciled: [],
             budgetUnreconciled: [],
             shadowTransactions: [],
+            budgetNew: [],
             balance: 0,
             bankBalance: 0
         }
     },
     computed: {
         ...Vuex.mapGetters(['periodTransactions']),
-        ...Vuex.mapState(['transactions', 'period'])
+        ...Vuex.mapState(['transactions', 'period','config'])
     },
     methods: {
         show() {
             UIkit.modal(this.$el).show();
+            Array.from(this.$refs.added.children).map(el => el.remove());
             this.uploadQFX();
         },
         reconcile() {
             let changes = [ ...this.autoReconciled.map(t => t.budget), ...this.closeMatches.map(t => t.budget), ...this.budgetUnreconciled];
             changes.map(tr => {
                 this.$store.saveTransaction(tr);
+            });
+            this.budgetNew.map(tr => {
+                this.$store.saveTransaction({
+                    amount: tr.amount,
+                    category: this.config.categories[0],
+                    date: tr.posted.toISODate(),
+                    name: tr.name,
+                    note: tr.memo,
+                    paid: true
+                });
             });
             UIkit.modal(this.$el).hide();
         },
@@ -130,6 +142,7 @@ export default {
                 this.autoReconciled = [];
                 this.closeMatches = [];
                 this.bankUnreconciled = [];
+                this.budgetNew = [];
                 this.shadowTransactions = JSON.parse(JSON.stringify(this.transactions));
 
                 let bankPeriod = this.bankRecords.transactions.filter(t => this.period.start <= t.posted); 
@@ -140,59 +153,61 @@ export default {
                 this.bankBalance = this.bankRecords.ledgerBalance.amount - this.bankRecords.transactions.filter(t => this.period.end < t.posted)
                     .map(t => t.amount).reduce((a,b) => a + b, 0);
 
-                // start by marking all transactions in this period as unpaid
-                perTransactions.map(tr => { tr.paid = false; });
+                    this.$nextTick(function() {
+                    // start by marking all transactions in this period as unpaid
+                    perTransactions.map(tr => { tr.paid = false; });
 
-                // auto reconciled: same amount, within the period
-                for (let tr of bankPeriod) {
-                    let matches = perTransactions.filter(t => t.amount == tr.amount);
-                    if (matches.length > 0) {
-                        matches.sort((a,b) => levenshtein(a.name, b.name));
-                        this.autoReconciled.push({
-                            budget: matches[0],
-                            bank: tr
-                        });
-                        perTransactions = perTransactions.filter(t => t !== matches[0]);
-                        removes.push(tr);
-                        // mark this as paid
-                        matches[0].paid = true;
+                    // auto reconciled: same amount, within the period
+                    for (let tr of bankPeriod) {
+                        let matches = perTransactions.filter(t => t.amount == tr.amount);
+                        if (matches.length > 0) {
+                            matches.sort((a,b) => levenshtein(a.name, b.name));
+                            this.autoReconciled.push({
+                                budget: matches[0],
+                                bank: tr
+                            });
+                            perTransactions = perTransactions.filter(t => t !== matches[0]);
+                            removes.push(tr);
+                            // mark this as paid
+                            matches[0].paid = true;
+                        }
                     }
-                }
-                bankPeriod = bankPeriod.filter(tr => removes.indexOf(tr) < 0);
-                removes = [];
+                    bankPeriod = bankPeriod.filter(tr => removes.indexOf(tr) < 0);
+                    removes = [];
 
-                // close matches: same amount, within 4 days of the period, not already auto reconciled
-                perTransactions = this.shadowTransactions.filter(tr => 
-                    this.period.start.minus({days:4}).toISODate() <= tr.date && 
-                    tr.date <= this.period.end.plus({days:4}) &&
-                    !this.autoReconciled.find(ar => ar.budget._key === tr._key));
-                for (let tr of bankPeriod) {
-                    let matches = perTransactions.filter(t => t.amount == tr.amount);
-                    if (matches.length > 0) {
-                        matches.sort((a,b) => levenshtein(a.name, b.name));
-                        this.closeMatches.push({
-                            budget: matches[0],
-                            bank: tr
-                        });
-                        perTransactions = perTransactions.filter(t => t !== matches[0]);
-                        removes.push(tr);
-                        // mark this as paid
-                        matches[0].paid = true;
+                    // close matches: same amount, within 4 days of the period, not already auto reconciled
+                    perTransactions = this.shadowTransactions.filter(tr => 
+                        this.period.start.minus({days:4}).toISODate() <= tr.date && 
+                        tr.date <= this.period.end.plus({days:4}) &&
+                        !this.autoReconciled.find(ar => ar.budget._key === tr._key));
+                    for (let tr of bankPeriod) {
+                        let matches = perTransactions.filter(t => t.amount == tr.amount);
+                        if (matches.length > 0) {
+                            matches.sort((a,b) => levenshtein(a.name, b.name));
+                            this.closeMatches.push({
+                                budget: matches[0],
+                                bank: tr
+                            });
+                            perTransactions = perTransactions.filter(t => t !== matches[0]);
+                            removes.push(tr);
+                            // mark this as paid
+                            matches[0].paid = true;
+                        }
                     }
-                }
-                this.bankUnreconciled = bankPeriod.filter(tr => removes.indexOf(tr) < 0);
-                this.budgetUnreconciled = this.shadowTransactions.filter(tr => 
-                    this.period.start.toISODate() <= tr.date &&
-                    tr.date <= this.period.end.toISODate() &&
-                    !this.autoReconciled.find(ar => ar.budget._key === tr._key) &&
-                    !this.closeMatches.find(ar => ar.budget._key === tr._key)
-                );
+                    this.bankUnreconciled = bankPeriod.filter(tr => removes.indexOf(tr) < 0);
+                    this.budgetUnreconciled = this.shadowTransactions.filter(tr => 
+                        this.period.start.toISODate() <= tr.date &&
+                        tr.date <= this.period.end.toISODate() &&
+                        !this.autoReconciled.find(ar => ar.budget._key === tr._key) &&
+                        !this.closeMatches.find(ar => ar.budget._key === tr._key)
+                    );
 
-                this.updateBalance();
+                    this.updateBalance();
 
-                // scroll to top
-                UIkit.scroll(this.$refs.budTop).scrollTo(this.$refs.budTop);
-                UIkit.scroll(this.$refs.bankTop).scrollTo(this.$refs.bankTop);
+                    // scroll to top
+                    UIkit.scroll(this.$refs.budTop).scrollTo(this.$refs.budTop);
+                    UIkit.scroll(this.$refs.bankTop).scrollTo(this.$refs.bankTop);
+                });
             } catch (err) {
                 // cancel selected on file upload
                 console.log(err);
@@ -202,7 +217,8 @@ export default {
                 let end = this.period.end.toISODate();
                 this.balance = this.shadowTransactions.filter(tr => (tr.date <= end) && tr.paid)
                     .map(tr => tr.amount)
-                    .reduce((a,b) => a + b, 0);
+                    .reduce((a,b) => a + b, 0) +
+                this.budgetNew.map(tr => tr.amount).reduce((a,b) => a + b, 0);
         },
         currency(value) {
             return Currency.format(value);
@@ -212,10 +228,11 @@ export default {
         }
     },
     updated() {
-        // console.log(this.$refs)
         for (let ch in this.$refs) {
-            if (ch !== 'bank') {
-                UIkit.util.on(this.$refs[ch][0], 'added', (e) => {
+            if (ch !== 'bank' && ch !== 'added') {
+                UIkit.util.off(this.$refs[ch][0], 'added');
+                UIkit.util.off(this.$refs[ch][0], 'removed');
+                UIkit.util.on(this.$refs[ch][0], 'added', (e) => { 
                     let container = e.detail[0]; // this appears to be a vuejs instance
                     let bank = e.detail[1]; // this is the HTML div that was dragged in
                     let bankTr = this.bankRecords.transactions.filter(t => t.id == bank.id);
@@ -261,6 +278,20 @@ export default {
                 });
             }
         }
+    },
+    mounted() {
+        // add the listener for new transactions
+        UIkit.util.on(this.$refs.added, 'added', (e) => {
+            // need to add this the list of new transactions
+            let ntrns = this.bankRecords.transactions.filter(t => t.id === e.detail[1].id);
+            this.budgetNew.push(...ntrns);
+            this.updateBalance();
+        });
+        UIkit.util.on(this.$refs.added, 'removed', (e) => {
+            // need to remove this from the list of new transactions
+            this.budgetNew = this.budgetNew.filter(tr => tr.id !== e.detail[1].id);
+            this.updateBalance();
+        });
     }
 }
 </script>
