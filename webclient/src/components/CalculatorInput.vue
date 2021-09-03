@@ -1,8 +1,9 @@
 <template>
     <input class="uk-input" ref="input" type="text" inputmode="decimal" :class="valid ? '' : 'invalid'" 
         :value="value" @change="onChange" @keydown="onKeyDown" 
-        @wheel.exact.prevent="(evt) => onMouseWheel(evt,1)" 
-        @wheel.shift.exact.prevent="(evt) => onMouseWheel(evt,5)"/>
+        @wheel.exact="(evt) => onMouseWheel(evt,1)" 
+        @wheel.shift.exact="(evt) => onMouseWheel(evt,5)"
+        @focus="onFocus" @focusout="offFocus"/>
 </template>
 
 <script>
@@ -26,7 +27,8 @@ export default {
     },
     data: function() {
         return {
-            valid: true
+            valid: true,
+            focused: false
         }
     },
     methods: {
@@ -40,6 +42,11 @@ export default {
             }
         },
         onMouseWheel(evt, inc=1) {
+            if (this.focused) { 
+                evt.preventDefault();
+            } else {
+                return;
+            }
             if (this.isValid(this.$refs.input.value)) {
                 // on Mac, shift wheel moves in X
                 if (evt.shiftKey && (Math.abs(evt.wheelDeltaY) == 0)) {
@@ -49,6 +56,12 @@ export default {
                 }
                 this.calculate(this.$refs.input.value);
             }
+        },
+        onFocus() {
+            this.focused = true;
+        },
+        offFocus() {
+            this.focused = false;
         },
         trimFormula(formula) {
             formula = formula.replace(/^0*/,'');
