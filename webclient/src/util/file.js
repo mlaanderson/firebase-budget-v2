@@ -1,3 +1,7 @@
+import { DateTime } from 'luxon';
+import ofx from 'node-ofx-parser';
+
+
 function Download(data, filename, type) {
     let blob = new Blob([data], { type: type });
 
@@ -47,6 +51,49 @@ function Upload(accept=null) {
     });
 }
 
+/**
+ * 
+ * @typedef {{ TRNTYPE: string, DTPOSTED: string, TRNAMT: string, FITID: string, NAME: string, MEMO: string}} OfxTransaction
+ * @typedef {{type: string, posted: DateTime, amount: number, name: string, memo: string }} Transaction
+ * 
+ * @param {string} text OFX or QFX text data
+ * @returns {Array<Transaction>}
+ */
+function ParseOfx(text) {
+    let data = ofx.parse(text);
+    if ('OFX' in data && 
+        'BANKMSGSRSV1' in data.OFX && 
+        'STMTTRNRS' in data.OFX.BANKMSGSRSV1) {
+        // check the status message
+        if (data.OFX.BANKMSGSRSV1.STMTTRNRS.STATUS && data.OFX.BANKMSGSRSV1.STMTTRNRS.STATUS.CODE === "0") {
+            if ('STMTRS' in data.OFX.BANKMSGSRSV1.STMTTRNRS &&
+                'BANKTRANLIST' in data.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS &&
+                'STMTTRN' in data.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST) {
+                // this is the list of transactions
+                /** @type {Array<OfxTransaction>} */
+                let raw = data.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST.STMTTRN;
+                return raw.map(otr => {
+                    return {
+                        type: otr.TRNTYPE,
+                        posted: DateTime.fromFormat(otr.FITID.substr(0,8), 'yyyyMMdd'),
+                        id: otr.FITID,
+                        amount: parseFloat(otr.TRNAMT),
+                        name: otr.NAME,
+                        memo: otr.MEMO
+                    };
+                });
+            } else {
+                console.log('ERROR: Did not find transactions in data', data.OFX.BANKMSGSRSV1.STMTTRNRS);
+            }
+        } else {
+            console.log('ERROR: Did not find status or invalid status in data', data.OFX.BANKMSGSRSV1.STMTTRNRS);
+        }
+    } else {
+        console.log('ERROR: Did not find OFX.BANKMSGSRSV1.STMTTRNRS in data', data);
+    }
+    return null;
+}
+
 export {
-    Download, Upload
+    Download, Upload, ParseOfx
 }
