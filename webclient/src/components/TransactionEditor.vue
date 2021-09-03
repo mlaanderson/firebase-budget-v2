@@ -7,7 +7,7 @@
 
             <div class="uk-modal-body" uk-overflow-auto>
                 <form class="uk-form-stacked" @keypress.enter="save">
-
+                    <a ref="te_top"></a>
                     <div class="uk-margin">
                         <label class="uk-form-label" for="te-dialog-date">Date</label>
                         <div class="uk-form-controls">
@@ -125,7 +125,11 @@ export default {
                 note: this.note
             };
             this.deposit = false;
+            this.show();
+        },
+        show() {
             UIkit.modal(this.$el).show();
+            UIkit.scroll(this.$refs.te_top).scrollTo(this.$refs.te_top);
         }
     },
     watch: {
