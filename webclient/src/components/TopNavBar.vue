@@ -33,7 +33,7 @@
                     <li><button class="uk-button-text" @click.prevent="showCash"><span class="uk-margin-small-right" uk-icon="icon: fa-regular-money-bill-alt"/>Cash</button></li>
                     
                     <li><button class="uk-button-text" @click.prevent="transfer"><span class="uk-margin-small-right" uk-icon="icon: forward"/>Transfer</button></li>
-                    <li><button class="uk-button-text" @click.prevent="reconcile"><span class="uk-margin-small-right" uk-icon="icon: database"/>Reconcile</button></li>
+                    <li class="uk-visible@m"><button class="uk-button-text" @click.prevent="reconcile"><span class="uk-margin-small-right" uk-icon="icon: database"/>Reconcile</button></li>
 
                     <li class="uk-nav-divider"></li>
                     

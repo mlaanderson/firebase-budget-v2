@@ -72,7 +72,16 @@ function ParseOfx(text) {
                 // this is the list of transactions
                 /** @type {Array<OfxTransaction>} */
                 let raw = data.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.BANKTRANLIST.STMTTRN;
-                return raw.map(otr => {
+                return {
+                    ledgerBalance: {
+                        date: DateTime.fromFormat(data.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.LEDGERBAL.DTASOF.substr(0,8), 'yyyyMMdd'),
+                        amount: parseFloat(data.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.LEDGERBAL.BALAMT)
+                    },
+                    availBalance: {
+                        date: DateTime.fromFormat(data.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.AVAILBAL.DTASOF.substr(0,8), 'yyyyMMdd'),
+                        amount: parseFloat(data.OFX.BANKMSGSRSV1.STMTTRNRS.STMTRS.AVAILBAL.BALAMT)
+                    },
+                    transactions: raw.map(otr => {
                     return {
                         type: otr.TRNTYPE,
                         posted: DateTime.fromFormat(otr.FITID.substr(0,8), 'yyyyMMdd'),
@@ -81,7 +90,7 @@ function ParseOfx(text) {
                         name: otr.NAME,
                         memo: otr.MEMO
                     };
-                });
+                })};
             } else {
                 console.log('ERROR: Did not find transactions in data', data.OFX.BANKMSGSRSV1.STMTTRNRS);
             }
