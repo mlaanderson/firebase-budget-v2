@@ -4,6 +4,11 @@
         <transaction-list/>
         <app-footer/>
 
+        <!-- datalists -->
+        <datalist id="transaction-names">
+            <option v-for="name in transactionNames" :key="name" :value="name"/>
+        </datalist>
+
         <!-- dialogs -->
         <login-dialog ref="loginDialog"/>
         <transaction-editor ref="transactionEditor"/>
@@ -44,7 +49,8 @@ export default {
     },
     store,
     computed: {
-        ...Vuex.mapState(['theme'])
+        ...Vuex.mapState(['theme']),
+        ...Vuex.mapGetters(['transactionNames'])
     },
     beforeCreate() {
         document.title = 'Anderson Budget';
