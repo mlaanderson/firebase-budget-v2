@@ -11,7 +11,7 @@
                     <div class="uk-margin">
                         <label class="uk-form-label" for="te-dialog-date">Date</label>
                         <div class="uk-form-controls">
-                            <input v-model="date" class="uk-input" id="te-dialog-date" type="date" placeholder="Some text...">
+                            <input v-model="date" class="uk-input" id="te-dialog-date" type="date" placeholder="Transaction Date...">
                         </div>
                     </div>
                 
@@ -27,22 +27,22 @@
                     <div class="uk-margin">
                         <label class="uk-form-label" for="te-dialog-name">Name</label>
                         <div class="uk-form-controls">
-                            <input v-model="name" class="uk-input" id="te-dialog-name" type="text" placeholder="Name...">
+                            <input v-model="name" class="uk-input" id="te-dialog-name" type="text" placeholder="Name..." list="transaction-names">
                         </div>
                     </div>
 
                     <div class="uk-margin">
                         <div class="uk-form-controls">
-                            <label><input v-model="deposit" class="uk-checkbox" type="checkbox" > Deposit</label><br>
-                            <label><input v-model="cash" class="uk-checkbox" type="checkbox" > Cash</label><br>
-                            <label><input v-model="transfer" class="uk-checkbox" type="checkbox" > Transfer</label><br>
+                            <label class="uk-padding-small"><input v-model="deposit" class="uk-checkbox" type="checkbox"> Deposit</label><br>
+                            <label class="uk-padding-small"><input v-model="cash" class="uk-checkbox" type="checkbox"> Cash</label><br>
+                            <label class="uk-padding-small"><input v-model="transfer" class="uk-checkbox" type="checkbox"> Transfer</label><br>
                         </div>
                     </div>
 
                     <div class="uk-margin">
                         <label class="uk-form-label" for="te-dialog-check">Check Number</label>
                         <div class="uk-form-controls">
-                            <input v-model="check" class="uk-input" id="te-dialog-check" type="text" placeholder="Name...">
+                            <input v-model="check" class="uk-input" id="te-dialog-check" type="text" placeholder="Check Number...">
                         </div>
                     </div>
 
@@ -55,13 +55,13 @@
                 
                     <div class="uk-margin">
                         <div class="uk-form-controls">
-                            <label><input v-model="paid" class="uk-checkbox" type="checkbox" > Paid</label><br>
-                            <label><input v-model="scheduled" class="uk-checkbox" type="checkbox" > Scheduled</label><br>
+                            <label class="uk-padding-small"><input v-model="paid" class="uk-checkbox" type="checkbox"> Paid</label><br/>
+                            <label class="uk-padding-small"><input v-model="scheduled" class="uk-checkbox" type="checkbox"> Scheduled</label><br/>
                         </div>
                     </div>
 
                     <div class="uk-margin">
-                        <label class="uk-form-lable" for="te-dialog-note">Notes</label>
+                        <label class="uk-form-label" for="te-dialog-note">Notes</label>
                         <div class="uk-form-controls">
                             <textarea v-model="note" class="uk-textarea" rows="5" id="td-dialog-note" placeholder="Notes..."></textarea>
                         </div>
@@ -77,6 +77,7 @@
         </div>
     </div>      
 </template>
+
 
 <script>
 import UIkit from 'uikit';

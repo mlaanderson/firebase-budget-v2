@@ -19,21 +19,21 @@
                     <div class="uk-margin">
                         <label class="uk-form-label" for="re-dialog-period">Period</label>
                         <div class="uk-form-controls">
-                            <input v-model="period" class="uk-input" id="re-dialog-period" type="text" placeholder="Name...">
+                            <input v-model="period" class="uk-input" id="re-dialog-period" type="text" placeholder="Period...">
                         </div>
                     </div>
 
                     <div class="uk-margin">
                         <label class="uk-form-label" for="re-dialog-start">From</label>
                         <div class="uk-form-controls">
-                            <input v-model="start" class="uk-input" id="re-dialog-start" type="date" placeholder="Some text...">
+                            <input v-model="start" class="uk-input" id="re-dialog-start" type="date" placeholder="Start Date...">
                         </div>
                     </div>
 
                     <div class="uk-margin">
                         <label class="uk-form-label" for="re-dialog-end">Until</label>
                         <div class="uk-form-controls">
-                            <input v-model="end" class="uk-input" id="re-dialog-end" type="date" placeholder="Some text...">
+                            <input v-model="end" class="uk-input" id="re-dialog-end" type="date" placeholder="End Date...">
                         </div>
                     </div>
                 
@@ -49,15 +49,15 @@
                     <div class="uk-margin">
                         <label class="uk-form-label" for="re-dialog-name">Name</label>
                         <div class="uk-form-controls">
-                            <input v-model="name" class="uk-input" id="re-dialog-name" type="text" placeholder="Name...">
+                            <input v-model="name" class="uk-input" id="re-dialog-name" type="text" placeholder="Name..." list="transaction-names">
                         </div>
                     </div>
 
                     <div class="uk-margin">
                         <div class="uk-form-controls">
-                            <label><input v-model="deposit" class="uk-checkbox" type="checkbox" > Deposit</label><br>
-                            <label><input v-model="cash" class="uk-checkbox" type="checkbox" > Cash</label><br>
-                            <label><input v-model="transfer" class="uk-checkbox" type="checkbox" > Transfer</label><br>
+                            <label class="uk-padding-small"><input v-model="deposit" class="uk-checkbox" type="checkbox"> Deposit</label><br>
+                            <label class="uk-padding-small"><input v-model="cash" class="uk-checkbox" type="checkbox"> Cash</label><br>
+                            <label class="uk-padding-small"><input v-model="transfer" class="uk-checkbox" type="checkbox"> Transfer</label><br>
                         </div>
                     </div>
 
@@ -70,7 +70,7 @@
 
                     <div class="uk-margin">
                         <div class="uk-form-controls">
-                            <label><input v-model="scheduled" class="uk-checkbox" type="checkbox" > Scheduled</label><br>
+                            <label class="uk-padding-small"><input v-model="scheduled" class="uk-checkbox" type="checkbox"> Scheduled</label><br>
                         </div>
                     </div>
 

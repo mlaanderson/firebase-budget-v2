@@ -102,6 +102,9 @@ const store = new Vuex.Store({
             });
 
             return result;
+        },
+        transactionNames: state => {
+            return [...new Set(state.transactions.map(tr => tr.name))];
         }
     }
 });
