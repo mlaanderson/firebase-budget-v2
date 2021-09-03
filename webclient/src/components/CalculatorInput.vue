@@ -3,9 +3,7 @@
         :value="value" @change="onChange" @keydown="onKeyDown" 
         @wheel.exact="(evt) => onMouseWheel(evt,1)" 
         @wheel.shift.exact="(evt) => onMouseWheel(evt,5)"
-        @focus="onFocus" @focusout="offFocus"
-
-        @keypress="increment"/>
+        @focus="onFocus" @focusout="offFocus"/>
 </template>
 
 <script>
