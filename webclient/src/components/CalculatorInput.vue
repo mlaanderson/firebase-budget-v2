@@ -3,7 +3,9 @@
         :value="value" @change="onChange" @keydown="onKeyDown" 
         @wheel.exact="(evt) => onMouseWheel(evt,1)" 
         @wheel.shift.exact="(evt) => onMouseWheel(evt,5)"
-        @focus="onFocus" @focusout="offFocus"/>
+        @focus="onFocus" @focusout="offFocus"
+
+        @keypress="increment"/>
 </template>
 
 <script>
@@ -38,6 +40,16 @@ export default {
         onKeyDown: function (evt) {
             if (ALLOWED.indexOf(evt.key) < 0) {
                 evt.preventDefault();
+                return;
+            }
+            if (evt.key === 'ArrowUp') {
+                evt.preventDefault();
+                this.increment(1);
+                return;
+            }
+            if (evt.key === 'ArrowDown') {
+                evt.preventDefault();
+                this.increment(-1);
                 return;
             }
         },
@@ -82,6 +94,12 @@ export default {
                        return false;
                    }
                } 
+            }
+        },
+        increment(inc) {
+            if (this.isValid(this.$refs.input.value)) {
+                this.$refs.input.value += ` ${Math.sign(inc) >= 0 ? '+' : '-'} ${Math.abs(inc)}`;
+                this.calculate(this.$refs.input.value);
             }
         },
         calculate: function(formula) {
