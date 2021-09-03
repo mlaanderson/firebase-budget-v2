@@ -40,6 +40,16 @@ export default {
                 evt.preventDefault();
                 return;
             }
+            if (evt.key === 'ArrowUp') {
+                evt.preventDefault();
+                this.increment(1);
+                return;
+            }
+            if (evt.key === 'ArrowDown') {
+                evt.preventDefault();
+                this.increment(-1);
+                return;
+            }
         },
         onMouseWheel(evt, inc=1) {
             if (this.focused) { 
@@ -82,6 +92,12 @@ export default {
                        return false;
                    }
                } 
+            }
+        },
+        increment(inc) {
+            if (this.isValid(this.$refs.input.value)) {
+                this.$refs.input.value += ` ${Math.sign(inc) >= 0 ? '+' : '-'} ${Math.abs(inc)}`;
+                this.calculate(this.$refs.input.value);
             }
         },
         calculate: function(formula) {
