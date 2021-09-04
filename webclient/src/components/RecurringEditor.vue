@@ -122,6 +122,20 @@ export default {
             if (e.target === this.$refs.amount.$el) return;
             if (e.target.tagName.toUpperCase() === 'TEXTAREA') return;
             this.$refs.amount.performOutstanding();
+
+            // check for validity
+            let valid = true;
+            if (!this.$refs.period.valid) {
+                valid = false;
+                UIkit.notification("Invalid period.", { status: 'danger' });
+            }
+            if (!this.$refs.amount.valid) {
+                valid = false;
+                UIkit.notification("Cannot calculate amount.", { status: 'danger' });
+            }
+
+            if (!valid) return;
+
             this.transaction.amount = Math.abs(this.transaction.amount) * (this.deposit ? 1 : -1);
 
             await this.$store.saveRecurring(this.transaction);

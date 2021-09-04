@@ -1,5 +1,5 @@
 <template>
-    <input class="uk-input" ref="input" type="text" inputmode="decimal" :class="valid ? '' : 'invalid'" 
+    <input class="uk-input" ref="input" type="text" inputmode="decimal" :class="valid ? '' : 'ui-invalid'" 
         :value="value" @change="onChange" @keydown="onKeyDown" 
         @wheel.exact="(evt) => onMouseWheel(evt,1)" 
         @wheel.shift.exact="(evt) => onMouseWheel(evt,5)"
@@ -12,7 +12,7 @@ import Icons from 'uikit/dist/js/uikit-icons';
 
 UIkit.use(Icons);
 
-const ALLOWED = ['Backspace', 'Enter', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'ArrowRight', 'Home', 'End', 'Delete', ...'0123456789. +-'];
+const ALLOWED = ['Backspace', 'Enter', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'ArrowRight', 'Home', 'End', 'Delete', 'Tab', ...'0123456789. +-'];
 
 export default {
     props: {
@@ -36,7 +36,7 @@ export default {
             this.calculate(this.$refs.input.value);
         },
         onKeyDown: function (evt) {
-            if (ALLOWED.indexOf(evt.key) < 0) {
+            if (ALLOWED.indexOf(evt.key) < 0) { 
                 evt.preventDefault();
                 return;
             }
@@ -72,13 +72,16 @@ export default {
             formula = this.trimFormula(formula);
             if (formula.split('').some(s => ALLOWED.indexOf(s) < 0)) {
                 // invalid text
+                this.valid = false;
                 return false;
             } else {
                if (formula !== '') {
                    try {
                         eval(formula);
+                        this.valid = true;
                         return true;
                    } catch {
+                       this.valid = false;
                        return false;
                    }
                } 
