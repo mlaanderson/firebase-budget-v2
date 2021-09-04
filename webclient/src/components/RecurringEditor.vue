@@ -19,7 +19,7 @@
                     <div class="uk-margin">
                         <label class="uk-form-label" for="re-dialog-period">Period</label>
                         <div class="uk-form-controls">
-                            <input v-model="period" class="uk-input" id="re-dialog-period" type="text" placeholder="Period...">
+                            <period-input v-model="period" ref="period" class="uk-input" id="re-dialog-period" placeholder="Period..."/>
                         </div>
                     </div>
 
@@ -92,13 +92,21 @@
     </div>      
 </template>
 
+<style scoped>
+    input.ui-invalid {
+        background: url('/images/underline.gif') bottom repeat-x !important;
+    }
+</style>
+
 <script>
 import UIkit from 'uikit';
 import CalculatorInput from "./CalculatorInput.vue";
+import PeriodInput from './PeriodInput.vue';
 
 export default {
     components: {
-        CalculatorInput
+        CalculatorInput,
+        PeriodInput
     },
     data: function () {
         return {
@@ -174,7 +182,7 @@ export default {
                 return "1 month";
             },
             set: function(val) {
-                if (this.transaction) {
+                if (this.transaction && this.$refs.period.valid) {
                     this.transaction.period = val;
                 }
             }
