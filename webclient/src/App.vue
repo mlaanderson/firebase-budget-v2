@@ -27,8 +27,12 @@ import TransactionEditor from './components/TransactionEditor.vue';
 import RecurringEditor from './components/RecurringEditor.vue';
 import AppFooter from './components/AppFooter.vue';
 import TransactionList from './components/TransactionList.vue';
-import './assets/css/uikit.default-theme.min.css';
 
+if (window.localStorage && window.localStorage.getItem('theme')) {
+    import(`./assets/css/uikit.${window.localStorage.getItem('theme')}-theme.min.css`);
+} else {
+    import('./assets/css/uikit.default-theme.min.css');
+}
 Vue.use(Vuex);
 
 // This mixin makes uikit available in all components
@@ -83,7 +87,9 @@ export default {
     },
     watch: {
         theme(value) {
-            console.log('theme changed:', value);
+            if (window.localStorage) {
+                window.localStorage.setItem('theme', value);
+            }
             import(`./assets/css/uikit.${value}-theme.min.css`);
         }
     }
