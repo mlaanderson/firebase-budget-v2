@@ -101,6 +101,12 @@ export default {
             if (e.target === this.$refs.amount.$el) return;
             if (e.target.tagName.toUpperCase() === 'TEXTAREA') return;
             this.$refs.amount.performOutstanding();
+
+            if (this.$refs.amount.valid == false) {
+                UIkit.notification('Cannot calculate amount', { status: 'danger' });
+                return;
+            }
+
             this.transaction.amount = Math.abs(this.transaction.amount) * (this.deposit ? 1 : -1);
             try {
                 await this.$store.saveTransaction(this.transaction);
