@@ -33,9 +33,9 @@
 
                     <div class="uk-margin">
                         <div class="uk-form-controls">
-                            <label class="uk-padding-small"><input v-model="deposit" class="uk-checkbox" type="checkbox"> Deposit</label><br>
-                            <label class="uk-padding-small"><input v-model="cash" class="uk-checkbox" type="checkbox"> Cash</label><br>
-                            <label class="uk-padding-small"><input v-model="transfer" class="uk-checkbox" type="checkbox"> Transfer</label><br>
+                            <label class="uk-margin-small"><input v-model="deposit" class="uk-checkbox" type="checkbox"> Deposit</label><br>
+                            <label class="uk-margin-small"><input v-model="cash" class="uk-checkbox" type="checkbox"> Cash</label><br>
+                            <label class="uk-margin-small"><input v-model="transfer" class="uk-checkbox" type="checkbox"> Transfer</label><br>
                         </div>
                     </div>
 
@@ -55,8 +55,8 @@
                 
                     <div class="uk-margin">
                         <div class="uk-form-controls">
-                            <label class="uk-padding-small"><input v-model="paid" class="uk-checkbox" type="checkbox"> Paid</label><br/>
-                            <label class="uk-padding-small"><input v-model="scheduled" class="uk-checkbox" type="checkbox"> Scheduled</label><br/>
+                            <label class="uk-margin-small"><input v-model="paid" class="uk-checkbox" type="checkbox"> Paid</label><br/>
+                            <label class="uk-margin-small"><input v-model="scheduled" class="uk-checkbox" type="checkbox"> Scheduled</label><br/>
                         </div>
                     </div>
 
