@@ -1,5 +1,11 @@
 import { Duration, DateTime } from "luxon";
 
+function TestNatural(natural) {
+    var re_phrase = /(\d+(?:\.\d+)?)\s*(year|yr|month|week|wk|day|dy|hour|hr|min|minute|second|sec)s?/gi;
+    var re_time = /^(\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)$/;
+    return re_phrase.test(natural) || re_time.test(natural);
+}
+
 function NaturalToISO8601(natural) {
     var re_phrase = /(\d+(?:\.\d+)?)\s*(year|yr|month|week|wk|day|dy|hour|hr|min|minute|second|sec)s?/gi;
     var re_time = /^(\d{2}):(\d{2}):(\d{2}(?:\.\d+)?)$/;
@@ -66,6 +72,8 @@ function NaturalToISO8601(natural) {
 Duration.fromNatural = function(natural) {
     return Duration.fromISO(NaturalToISO8601(natural));
 }
+
+Duration.validNatural = TestNatural;
 
 DateTime.today = function() {
     return DateTime.now().startOf('day');
