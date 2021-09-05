@@ -31,6 +31,20 @@
     </div>
 </template>
 
+<style scoped>
+    .uk-iconnav {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+    }
+    .uk-card-title {
+        margin-top: 12px;
+    }
+    .uk-card {
+        border-bottom: 1px solid #e5e5e5;
+    }
+</style>
+
 <script>
 import Vue from 'vue';
 import Vuex from 'vuex';
