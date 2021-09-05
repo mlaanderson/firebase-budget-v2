@@ -17,7 +17,7 @@
     .totals {
         position: relative;
         z-index: 999;
-        top: 1.5em;
+        top: 0;
         left: 0;
         width: 100%;/*calc(100% - 15px);*/
         text-align: right;

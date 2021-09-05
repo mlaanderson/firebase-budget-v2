@@ -11,12 +11,12 @@
         </div>
         <div class="uk-visible@s uk-navbar-center">
             {{ period.start.toLocaleString({ month: 'short', day: 'numeric' }) }} -
-            {{ period.end.toLocaleString({ month: 'short', day: 'numeric' }) }}
+            {{ period.end.toLocaleString({ month: 'short', day: 'numeric', year: 'numeric' }) }}
         </div>
         <div class="uk-navbar-right">
             <span class="uk-hidden@s">
                 {{ period.start.toLocaleString({ month: 'numeric', day: 'numeric' }) }} - 
-                {{ period.end.toLocaleString({ month: 'numeric', day: 'numeric' }) }}&nbsp;
+                {{ period.end.toLocaleString({ month: 'numeric', day: 'numeric', year: '2-digit' }) }}&nbsp;
             </span>
             <ul class="uk-iconnav">
                 <li><a href="#" ref="btnAddTransaction" @click.prevent="addTransaction" uk-icon="icon: plus" uk-tooltip="Add New Transaction"></a></li>
