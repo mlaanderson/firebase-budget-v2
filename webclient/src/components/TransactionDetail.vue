@@ -17,6 +17,9 @@
                 <a href="#" @click.prevent="editRecurring" uk-icon="icon: future" uk-tooltip="Edit Recurring"></a>
             </li>
             <li>
+                <a href="#" v-on:click.prevent="copyTransaction" uk-icon="icon: copy" uk-tooltip="Copy Transaction"></a>
+            </li>
+            <li>
                 <a href="#" v-on:click.prevent="deleteTransaction" uk-icon="icon: trash" uk-tooltip="Delete"></a>
             </li>
             <li class="uk-visible@m">
@@ -77,6 +80,14 @@ export default {
             } catch {
                 // nothing to do 
             }
+        },
+        async copyTransaction() {
+            let copy = JSON.parse(JSON.stringify(this.transaction));
+            delete copy._key;
+            copy.paid = false;
+            copy.scheduled = false;
+            copy.recurring = null;
+            await this.$store.saveTransaction(copy);
         },
         showInfo() {
             this.$emit('info', this.transaction);
