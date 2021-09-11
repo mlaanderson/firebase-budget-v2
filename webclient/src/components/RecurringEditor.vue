@@ -119,7 +119,10 @@ export default {
             this.$refs.amount.changeInputMode(extended);
         },
         async save(e) {
-            if (e.target === this.$refs.amount.$el) return;
+            if (e.target === this.$refs.amount.$el) {
+                // don't save when converting a formula to a value
+                if (this.amount.toString() !== this.$refs.amount.$el.value) return;
+            }
             if (e.target.tagName.toUpperCase() === 'TEXTAREA') return;
             this.$refs.amount.performOutstanding();
 
