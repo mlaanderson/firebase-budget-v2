@@ -128,6 +128,7 @@ export default {
 
             // check for validity
             let valid = true;
+
             if (!this.$refs.period.valid) {
                 valid = false;
                 UIkit.notification("Invalid period.", { status: 'danger' });
