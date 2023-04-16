@@ -137,37 +137,31 @@ store.findText = function(text) {
     return [];
 }
 
-store.saveConfig =  async function(config) {
-    if (Firebase.isUserValid) {
-        await Firebase.saveConfig(config);
-    }
+store.saveConfig =  function(config) {
+    Firebase.saveConfig(config);
 }
 
-store.deleteRecurring =  async function(transaction) {
+store.deleteRecurring =  function(transaction) {
     transaction.delete = this.state.period.start.toISODate();
-    try {
-        await Firebase.saveRecurring(transaction);
-    } catch {
-        // nothing can be done
-    }
+    Firebase.saveRecurring(transaction);
 }
 
-store.saveRecurring = async function(transaction) {
+store.saveRecurring = function(transaction) {
     try {
         // set the active date so the server knows to create the transactions
         transaction.active = this.state.period.start.toISODate();
-        await Firebase.saveRecurring(transaction);
+        Firebase.saveRecurring(transaction);
     } catch(error) {
         console.log('ERROR:', error);
     }
 }
 
-store.deleteTransaction = async function(transaction) {
-    await Firebase.deleteTransaction(transaction);
+store.deleteTransaction = function(transaction) {
+    Firebase.deleteTransaction(transaction);
 }
 
-store.saveTransaction = async function(transaction) {
-    await Firebase.saveTransaction(transaction);
+store.saveTransaction = function(transaction) {
+    Firebase.saveTransaction(transaction);
 }
 
 store.undo = function() {
@@ -179,28 +173,29 @@ store.redo = function() {
 }
 
 store.logout = function() {
-    Firebase.auth.signOut();
+    Firebase.signOut();
 }
 
-store.backup = async function() {
-    let snapshot = await Firebase.db.ref(Firebase.uid).get();
-    let data = snapshot.val();
+store.backup = function() {
+    Firebase.backupBudget();
+}
+
+function onBackup(data) {
     let stringData = JSON.stringify(data);
     let filename = `budget-${this.state.period.start.toISODate()}.json`;
 
     Download(stringData, filename, 'application/json');
 }
 
-store.restore = async function(data) {
-    await Firebase.db.ref(`${Firebase.uid}/accounts/budget`).set(data)
+store.restore = function(data) {
+    Firebase.restoreBudget(data)
 }
 
 /**
  * Loads configuration changes into the store when changed
  * @param {DataSnapshot} snap Firebase snapshot
  */
-function onConfig(snap) {
-    let config = snap.val();
+function onConfig(config) {
     let periodLength = Duration.fromNatural(config.periods.length).as('days');
     let startDate = DateTime.fromISO(config.periods.start).startOf('day');
     store.commit('set', { key: 'config', value: {
@@ -234,8 +229,7 @@ scheduled?: boolean;
 recurring? : string;
 transfer? : boolean;
 */
-function onTransaction(snap) {
-    let transactions = snap.val();
+function onTransaction(transactions) {
     let result = [];
     for (let key in transactions) {
         result.push({ 
@@ -267,8 +261,7 @@ function onTransaction(snap) {
     delete?: string;
     scheduled?: boolean;
 */
-function onRecurring(snap) {
-    let recurrings = snap.val();
+function onRecurring(recurrings) {
     let result = [];
     for (let key in recurrings) {
         result.push({ 
@@ -283,14 +276,20 @@ function onRecurring(snap) {
     store.commit('set', { key: 'recurring', value: result });
 }
 
-Firebase.auth.onAuthStateChanged((auth) => {
+Firebase.on('authStateChanged', (auth) => {
     if (auth) {
         // get ready to populate the state
-        Firebase.db.ref(`${Firebase.uid}/config`).on('value', onConfig);
-        Firebase.db.ref(`${Firebase.uid}/accounts/budget/transactions`).on('value', onTransaction);
-        Firebase.db.ref(`${Firebase.uid}/accounts/budget/recurring`).on('value', onRecurring);
+        Firebase.on('config', onConfig);
+        Firebase.on('transaction', onTransaction);
+        Firebase.on('recurring', onRecurring);
+        Firebase.on('backup', onBackup);
         store.commit('set', { key: 'username', value: auth.email });
     } else {
+        // disable listeners
+        Firebase.off('config');
+        Firebase.off('transaction');
+        Firebase.off('recurring');
+        Firebase.off('backup');
         // empty the state
         store.commit('setConfig', { key: 'categories', value: ['Income'] });
         store.commit('set', { key: 'transactions', value: [] });

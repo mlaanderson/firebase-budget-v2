@@ -45,7 +45,7 @@ export default {
         async doLogin() {
             if (this.$refs.btnLogin.disabled === false) {
                 try {
-                    await Firebase.auth.signInWithEmailAndPassword(this.$refs.username.value, this.$refs.password.value);
+                    await Firebase.signInWithEmailAndPassword(this.$refs.username.value, this.$refs.password.value);
                 } catch (err) {
                     console.log(err.code);
                     switch (err.code) {
@@ -81,7 +81,7 @@ export default {
         }
     },
     mounted() {
-        Firebase.auth.onAuthStateChanged(this.authStateChanged);
+        Firebase.on('authStateChanged', this.authStateChanged);
     }
 }
 </script>
