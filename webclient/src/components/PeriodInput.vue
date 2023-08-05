@@ -19,8 +19,9 @@ export default {
     },
     methods: {
         validate() {
-            this.$emit('valid', { valid: this.valid });
-            if (this.valid) {
+            // let isValid = (this.$refs.input.value.length > 0) && Duration.validNatural(this.$refs.input.value);
+            this.$emit('valid', { valid: (this.$refs.input.value.length > 0) && Duration.validNatural(this.$refs.input.value) });
+            if ((this.$refs.input.value.length > 0) && Duration.validNatural(this.$refs.input.value)) {
                 this.$refs.input.classList.remove('ui-invalid');
             } else {
                 this.$refs.input.classList.add('ui-invalid');

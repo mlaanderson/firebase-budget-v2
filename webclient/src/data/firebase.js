@@ -125,8 +125,11 @@ class Firebase extends EventEmitter {
         this.emit('history', this._can_undo, this._can_redo);
     }
 
-    _handle_backup(data) {
-        this.emit('backup', data);
+    _handle_backup(data, id) {
+        if (this.__backup_data && this.__backup_data.id === id) {
+            this.__backup_data.resolve(data);
+            this.__backup_data = undefined;
+        }
     }
 
     canUndo() {
@@ -197,9 +200,15 @@ class Firebase extends EventEmitter {
     }
 
     backupBudget() {
-        if (this.isUserValid) {
-            this._send_message('backupBudget');
-        }
+        return new Promise((resolve, reject) => {
+            if (this.isUserValid) {
+                let id = Date.now();
+                this.__backup_data = { id, resolve };
+                this._send_message('backupBudget', id);
+            } else {
+                reject('Invalid user');
+            }
+        });
     }
 
     signInWithEmailAndPassword(username, password) {

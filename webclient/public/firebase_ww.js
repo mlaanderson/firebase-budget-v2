@@ -54,7 +54,7 @@ const firebaseConfig = {
 };
 
 var window = {};
-importScripts('/firebase/firebase.js');
+importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase.js');
 firebase.initializeApp(firebaseConfig);
 
 // database and auth
@@ -118,7 +118,7 @@ class Firebase {
 
         switch (event.messageName) {
             case 'backupBudget':
-                this.backupBudget();
+                this.backupBudget(...event.args);
                 break;
             case 'deleteTransaction':
                 this.deleteTransaction(...event.args);
@@ -164,7 +164,7 @@ class Firebase {
         this._transactionTimer = setTimeout(() => {
             this.emit('transaction', this._transactionData);
             this._transactionData = {};
-        }, 500);
+        }, 50);
     }
 
     onRecurring(snap) {
@@ -252,7 +252,11 @@ class Firebase {
     }
 
     async signInWithEmailAndPassword(username, password) {
-        await this.auth.signInWithEmailAndPassword(username, password);
+        try {
+            await this.auth.signInWithEmailAndPassword(username, password);
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     async deleteTransaction(record, storeHistory=true) {
@@ -445,6 +449,7 @@ class Firebase {
     async restoreBudget(data) {
         if (this.isUserValid) {
             try {
+                console.log(data);
                 await this.db.ref(`${this.uid}/accounts/budget`).set(data);
             } catch {
                 // do what?
@@ -452,10 +457,10 @@ class Firebase {
         }
     }
 
-    async backupBudget() {
+    async backupBudget(...args) {
         if (this.isUserValid) {
-            let backup = await this.db.ref(`${this.uid}/accounts/budget`).get();
-            this.emit('backup', backup.val());
+            let backup = await this.db.ref(`${this.uid}`).get();
+            this.emit('backup', backup.val(), ...args);
         }
     }
 }

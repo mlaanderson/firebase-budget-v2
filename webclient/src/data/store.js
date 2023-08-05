@@ -176,11 +176,8 @@ store.logout = function() {
     Firebase.signOut();
 }
 
-store.backup = function() {
-    Firebase.backupBudget();
-}
-
-function onBackup(data) {
+store.backup = async function() {
+    let data = await Firebase.backupBudget();
     let stringData = JSON.stringify(data);
     let filename = `budget-${this.state.period.start.toISODate()}.json`;
 
@@ -282,14 +279,14 @@ Firebase.on('authStateChanged', (auth) => {
         Firebase.on('config', onConfig);
         Firebase.on('transaction', onTransaction);
         Firebase.on('recurring', onRecurring);
-        Firebase.on('backup', onBackup);
+        // Firebase.on('backup', onBackup);
         store.commit('set', { key: 'username', value: auth.email });
     } else {
         // disable listeners
         Firebase.off('config');
         Firebase.off('transaction');
         Firebase.off('recurring');
-        Firebase.off('backup');
+        // Firebase.off('backup');
         // empty the state
         store.commit('setConfig', { key: 'categories', value: ['Income'] });
         store.commit('set', { key: 'transactions', value: [] });
